@@ -1,0 +1,60 @@
+%PDF-1.4
+1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj
+2 0 obj<< /Type /Pages /Kids [3 0 R] /Count 1 >>endobj
+3 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792]
+/Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>endobj
+4 0 obj<< /Length 2396 >>stream
+BT /F1 10 Tf
+1 0 0 1 50 750 Tm (MINGGU 1 ? PENGENALAN DATA MINING) Tj
+1 0 0 1 50 737 Tm ( ) Tj
+1 0 0 1 50 724 Tm (Mata kuliah: IF211 Data Mining) Tj
+1 0 0 1 50 711 Tm (Tujuan bacaan: Memahami definisi, tujuan, dan kerangka kerja penambangan data.) Tj
+1 0 0 1 50 698 Tm ( ) Tj
+1 0 0 1 50 685 Tm (1. APA ITU DATA MINING?) Tj
+1 0 0 1 50 672 Tm ( ) Tj
+1 0 0 1 50 659 Tm (Data mining adalah proses menemukan pola, hubungan, dan anomali yang bermakna dari volume ) Tj
+1 0 0 1 50 646 Tm ( ) Tj
+1 0 0 1 50 633 Tm (Perbedaan dengan query biasa: kita tidak selalu tahu pertanyaan pasti di awal; mining memb) Tj
+1 0 0 1 50 620 Tm ( ) Tj
+1 0 0 1 50 607 Tm (2. KERANGKA CRISP-DM \(RINGKAS\)) Tj
+1 0 0 1 50 594 Tm ( ) Tj
+1 0 0 1 50 581 Tm (1. Business understanding ? tujuan bisnis & kriteria sukses) Tj
+1 0 0 1 50 568 Tm (2. Data understanding ? eksplorasi, kualitas, missing values) Tj
+1 0 0 1 50 555 Tm (3. Data preparation ? cleaning, transformasi, feature engineering) Tj
+1 0 0 1 50 542 Tm (4. Modeling ? clustering, klasifikasi, asosiasi, dll.) Tj
+1 0 0 1 50 529 Tm (5. Evaluation ? apakah model/jawaban memenuhi tujuan bisnis?) Tj
+1 0 0 1 50 516 Tm (6. Deployment ? operasionalisasi \(dashboard, batch scoring\)) Tj
+1 0 0 1 50 503 Tm ( ) Tj
+1 0 0 1 50 490 Tm (Untuk diskusi minggu ini, fokus pada langkah 1?3: tanpa data yang dipahami dan dibersihkan) Tj
+1 0 0 1 50 477 Tm ( ) Tj
+1 0 0 1 50 464 Tm (3. JENIS TUGAS MINING \(OVERVIEW\)) Tj
+1 0 0 1 50 451 Tm ( ) Tj
+1 0 0 1 50 438 Tm (  Tugas   Contoh pertanyaan  ) Tj
+1 0 0 1 50 425 Tm ( ------- ------------------- ) Tj
+1 0 0 1 50 412 Tm (  Clustering   Segmen pelanggan mana yang mirip?  ) Tj
+1 0 0 1 50 399 Tm (  Classification   Apakah transaksi ini fraud?  ) Tj
+1 0 0 1 50 386 Tm (  Association rules   Produk apa sering dibeli bersamaan?  ) Tj
+1 0 0 1 50 373 Tm (  Anomaly detection   Transaksi mana yang tidak wajar?  ) Tj
+1 0 0 1 50 360 Tm ( ) Tj
+1 0 0 1 50 347 Tm (4. DISKUSI KELOMPOK \(PROMPT\)) Tj
+1 0 0 1 50 334 Tm ( ) Tj
+1 0 0 1 50 321 Tm (? Sebutkan satu kasus di kampus atau UMKM yang cocok untuk data mining.) Tj
+1 0 0 1 50 308 Tm (? Langkah CRISP-DM mana yang paling sering di-skip di praktik? Mengapa?) Tj
+1 0 0 1 50 295 Tm (? Mengapa preprocessing disebut langkah yang paling memakan waktu?) Tj
+1 0 0 1 50 282 Tm ( ) Tj
+1 0 0 1 50 269 Tm (Kata kunci untuk goal minggu ini: CRISP-DM, preprocessing, pola, segmentasi, kualitas data) Tj
+ET
+endstream
+endobj
+5 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000266 00000 n 
+trailer<< /Size 6 /Root 1 0 R >>
+startxref
+400
+%%EOF
