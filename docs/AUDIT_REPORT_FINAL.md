@@ -62,7 +62,7 @@ Model discovery feature implemented and working
 
 **Modified Files (Our Changes):**
 - ✅ `app/api/routes/__init__.py` - registered admin router
-- ✅ `requirements.txt` - added cachetools, anthropic
+- ✅ `requirements.txt` - added cachetools, removed anthropic (unified approach)
 - ✅ `src/services/ai-provider.service.ts` - migrated to AdminProviderService
 - ✅ `src/controllers/ai-provider.controller.ts` - added getModels method
 - ✅ `src/routes/ai-provider.routes.ts` - added /:provider/models route
@@ -163,7 +163,7 @@ const result = await AdminProviderService.testProvider({
 | Group | Task | Status | Notes |
 |-------|------|--------|-------|
 | 1 | AI-Engine: Admin Routes | ✅ DONE | admin.py created, registered |
-| 2 | AI-Engine: Provider Testing | ✅ DONE | OpenAI, Anthropic, Gemini (partial) |
+| 2 | AI-Engine: Provider Testing | ✅ DONE | Unified OpenAI-compatible (all providers) |
 | 3 | AI-Engine: Model Discovery | ✅ DONE | With TTL caching |
 | 4 | AI-Engine: Deploy & Verify | ✅ DONE | Dependencies installed, tests added |
 | 5 | Core-API: Update AI Provider | ✅ DONE | testConnection migrated |
@@ -190,8 +190,8 @@ const result = await AdminProviderService.testProvider({
 
 **AI-Engine Dependencies:**
 - ✅ `cachetools>=5.3.0` - Added to requirements.txt
-- ✅ `anthropic>=0.39.0` - Added to requirements.txt
-- ✅ Both installed in venv (verified by successful import)
+- ✅ `anthropic` - Removed (unified OpenAI-compatible approach)
+- ✅ All dependencies installed in venv
 
 **Core-API Dependencies:**
 - ✅ `axios>=1.6.0` - Added to package.json
@@ -278,14 +278,9 @@ const result = await AdminProviderService.testProvider({
 
 ### Medium Risk Issues: **NONE** ✅
 
-### Low Risk Issues: **2 items** ⚠️
+### Low Risk Issues: **1 item** ⚠️
 
-1. **Gemini Provider Incomplete**
-   - Current: Returns placeholder error
-   - Impact: Low - OpenAI and Anthropic work
-   - Mitigation: Document as "future work" in defense
-
-2. **Old Code Not Removed**
+1. **Old Code Not Removed**
    - `ai.service.ts` still in repo
    - Impact: None - not imported/used
    - Mitigation: Document as "requires dependency verification"
@@ -354,12 +349,12 @@ A: "Yes. Backend fully functional, frontend working, tests passing. Siap deploy.
 
 ### For Post-Defense (Future Work)
 
-1. ⚠️ Complete Gemini provider testing
-2. ⚠️ Add E2E integration tests
-3. ⚠️ Add frontend component tests
-4. ⚠️ Test in production environment
-5. ⚠️ Remove old ai.service.ts (after dependency verification)
-6. ⚠️ Add OpenAPI spec documentation
+1. ⚠️ Add E2E integration tests
+2. ⚠️ Add frontend component tests
+3. ⚠️ Test in production environment
+4. ⚠️ Remove old ai.service.ts (after dependency verification)
+5. ⚠️ Add OpenAPI spec documentation
+6. ⚠️ Add UI model dropdown for better UX
 
 ---
 
