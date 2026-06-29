@@ -1,0 +1,208 @@
+
+services:
+  # ============================================
+  # Infrastructure
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123hshi
+      POSTGRES_DB: kolabri-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c shared_buffers=64MB
+      -c work_mem=4MB
+      -c maintenance_work_mem=32MB
+      -c effective_cache_size=256MB
+      -c max_connections=50
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mongodb:
+    image: mongo:4.4
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    command: mongod --wiredTigerCacheSizeGB 0.25
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'db.runCommand({ping:1})' | mongo --quiet || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT__STORAGE__ON_DISK_PAYLOAD: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c \"echo > /dev/tcp/localhost/6333\""]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ============================================
+  # Application Services
+  # ============================================
+  ai-engine:
+    build:
+      context: ./Kolabri-ai-engine
+      dockerfile: Dockerfile
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8001"
+      ENV: development
+      DEBUG: "true"
+      LOG_LEVEL: "DEBUG"
+      LOG_FORMAT: "console"
+      DOCS_ENABLED: "true"
+      OPENAI_API_KEY: sk-production-placeholder-key-1234567890abcdef
+      OPENAI_BASE_URL: https://api.openai.com/v1
+      MONGO_URI: mongodb://mongodb:27017
+      MONGO_DB_NAME: kolabri
+      ENABLE_MONGODB_LOGGING: "true"
+      CORE_API_URL: https://kolabri.jmola.my.id
+      CORE_API_SECRET: kolabri-prod-core-secret-2026-06-16-abcdef1234567890
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_COLLECTION_PREFIX: kolabri
+      EMBEDDING_MODEL: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+      ENABLE_EFFICIENCY_GUARD: "true"
+      CACHE_TTL_SECONDS: "3600"
+      RATE_LIMIT_MAX_REQUESTS: "100"
+      RATE_LIMIT_WINDOW_SECONDS: "60"
+    env_file:
+      - ./Kolabri-ai-engine/.env
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --timeout=5 http://localhost:8001/ > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  core-api:
+    build:
+      context: ./Kolabri-core-api
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      NODE_ENV: development
+      DEBUG: "*"
+      NODE_OPTIONS: "--max-old-space-size=256"
+      DATABASE_URL: postgresql://postgres:123hshi@postgres:5432/kolabri-db?schema=public
+      MONGODB_URL: mongodb://mongodb:27017/kolabri
+      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
+      JWT_EXPIRES_IN: 7d
+      AI_ENGINE_URL: http://ai-engine:8001
+      CORE_API_SECRET: kolabri-prod-core-secret-2026-06-16-abcdef1234567890
+      CLIENT_URL: http://localhost:8000
+      REDIS_URL: redis://redis:6379
+      MAX_FILE_SIZE_MB: "10"
+    env_file:
+      - ./Kolabri-core-api/.env
+    volumes:
+      - ./Kolabri-client-app/storage/app/public:/shared-storage:rw
+      - ./Kolabri-client-app/storage/app/private:/shared-storage-private:rw
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      ai-engine:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  client-app:
+    build:
+      context: ./Kolabri-client-app
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: https://kolabri.web.id
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: kolabri-db
+      DB_SCHEMA: app
+      DB_USERNAME: postgres
+      DB_PASSWORD: 123hshi
+      API_BASE_URL: http://core-api:3000
+      AI_ENGINE_URL: http://ai-engine:8001
+      SOCKET_URL: https://kolabri.web.id
+      VITE_SOCKET_URL: https://kolabri.web.id
+      SESSION_DRIVER: file
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      PHP_FPM_PM: static
+      PHP_FPM_MAX_CHILDREN: "2"
+    env_file:
+      - ./Kolabri-client-app/.env
+    volumes:
+      - ./Kolabri-client-app/storage/app/public:/var/www/html/storage/app/public:rw
+      - ./Kolabri-client-app/storage/app/private:/var/www/html/storage/app/private:rw
+      - ./Kolabri-client-app/storage/app/public:/shared-storage:rw
+      - ./Kolabri-client-app/storage/app/private:/shared-storage-private:rw
+    depends_on:
+      core-api:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - client-app
+      - core-api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  mongo_data:
+  qdrant_data:
