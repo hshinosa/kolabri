@@ -1,0 +1,6 @@
+schema: 1.0
+change: make-rate-limiter-truly-lazy
+status: proposed
+created: 2026-06-07
+owner: Sisyphus
+description: Remove rate limiter initialization from module import time and move it into the FastAPI lifespan handler.

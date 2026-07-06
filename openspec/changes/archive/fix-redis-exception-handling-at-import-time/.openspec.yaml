@@ -1,0 +1,6 @@
+schema: 1.0
+change: fix-redis-exception-handling-at-import-time
+status: proposed
+created: 2026-06-07
+owner: Sisyphus
+description: Fix Redis exception handling at import time to prevent TypeError during pytest collection and improve startup resilience.

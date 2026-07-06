@@ -1,0 +1,6 @@
+schema: 1.0
+change: remove-gemini-vision-support
+status: proposed
+created: 2026-06-07
+owner: Sisyphus
+description: Remove all Google Generative AI (Gemini Vision) support as the project now focuses exclusively on OpenAI-compatible models and local embeddings.
