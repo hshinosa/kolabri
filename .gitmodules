@@ -1,0 +1,9 @@
+[submodule "Kolabri-core-api"]
+	path = Kolabri-core-api
+	url = https://github.com/hshinosa/Kolabri-core-api.git
+[submodule "Kolabri-ai-engine"]
+	path = Kolabri-ai-engine
+	url = https://github.com/hshinosa/Kolabri-ai-engine.git
+[submodule "Kolabri-client-app"]
+	path = Kolabri-client-app
+	url = https://github.com/hshinosa/Kolabri-client-app.git

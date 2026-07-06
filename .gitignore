@@ -1,0 +1,70 @@
+# OS/editor noise
+.DS_Store
+
+# Agent/local tooling state
+.codegraph/
+.dev/
+.dev-logs/
+.dev-pids/
+.omo/
+.opencode/
+.pi/
+.playwright-mcp/
+.sisyphus/
+
+# Test/build artifacts
+.coverage
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+
+# Local runtime data
+qdrant_storage/
+
+# Local thesis/draft workspace, not source-controlled in root repo
+SRS-SDD/
+
+# Root-level screenshots/manual QA captures
+/*.png
+
+# Local restore scratch
+restore.sh
+
+# Python/runtime cache
+__pycache__/
+*.py[cod]
+
+# Local benchmark scratch/results
+benchmark-*.js
+llm-benchmark-*.js
+benchmark-*.json
+benchmark-results*.json
+
+# Local one-off helper scripts
+backup.sh
+deploy.sh
+convert_to_docx.py
+ingest_script.py
+
+# Local research/interview workspace
+hasilWawancara/
+
+# Generated/local event data
+data/event_logs/
+
+# Root-level one-off audit/report drafts; move curated docs under docs/
+/*AUDIT*.md
+/*REPORT*.md
+/*SUMMARY*.md
+/IMPLEMENTATION_PRIORITIES.md
+/OUT_OF_SRS_FEATURES.md
+/TOAST_*.md
+/UI_UX_Architecture.md
+/demo-data-requirements.md
+/srs.md
+
+# Root-level stray framework tests belong inside service repos
+tests/
+
+# Never commit TLS material
+nginx/ssl/
