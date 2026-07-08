@@ -82,13 +82,16 @@ services:
       LOG_LEVEL: "DEBUG"
       LOG_FORMAT: "console"
       DOCS_ENABLED: "true"
+      UNIFIED_PROVIDER_ENABLED: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
       OPENAI_API_KEY: sk-production-placeholder-key-1234567890abcdef
       OPENAI_BASE_URL: https://api.openai.com/v1
       MONGO_URI: mongodb://mongodb:27017
       MONGO_DB_NAME: kolabri
       ENABLE_MONGODB_LOGGING: "true"
-      CORE_API_URL: https://kolabri.jmola.my.id
-      CORE_API_SECRET: kolabri-prod-core-secret-2026-06-16-abcdef1234567890
+      CORE_API_URL: http://core-api:3000
+      CORE_API_SECRET: shared-secret-key
       QDRANT_URL: http://qdrant:6333
       QDRANT_COLLECTION_PREFIX: kolabri
       EMBEDDING_MODEL: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
@@ -158,9 +161,10 @@ services:
     ports:
       - "8000:80"
     environment:
-      APP_ENV: production
-      APP_DEBUG: "false"
-      APP_URL: https://kolabri.web.id
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      ASSET_URL: http://localhost:8000
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: "5432"
@@ -170,8 +174,8 @@ services:
       DB_PASSWORD: 123hshi
       API_BASE_URL: http://core-api:3000
       AI_ENGINE_URL: http://ai-engine:8001
-      SOCKET_URL: https://kolabri.web.id
-      VITE_SOCKET_URL: https://kolabri.web.id
+      SOCKET_URL: http://localhost:3000
+      VITE_SOCKET_URL: http://localhost:3000
       SESSION_DRIVER: file
       CACHE_STORE: file
       QUEUE_CONNECTION: sync
