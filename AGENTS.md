@@ -77,6 +77,76 @@ To completely re-seed from scratch:
 ```
 The `--skip-pdf` flag skips PDF regeneration if files already exist in `storage/app/public/demo-materials/`. Without this flag, old PDFs are deleted and regenerated.
 
+## AI Provider Configuration (Database-Driven)
+
+Kolabri uses a **database-driven AI provider configuration** system where AI Engine dynamically fetches provider settings from Core API instead of relying solely on environment variables.
+
+### How It Works
+
+1. **Core API** stores AI provider configuration in `ai_providers` table (PostgreSQL)
+2. **AI Engine** fetches active provider via internal endpoint `/api/internal/ai-provider/active`
+3. **Redis cache** stores provider config for 5 minutes to minimize database load
+4. **Fallback** to environment variables when fetch fails or flag is disabled
+
+### Configuration Flags
+
+- `UNIFIED_PROVIDER_ENABLED=false` (default): Use environment variables
+- `UNIFIED_PROVIDER_ENABLED=true`: Fetch from database (cached for 5 minutes)
+
+### Setup
+
+**Enable database-driven config:**
+```bash
+# In Kolabri-ai-engine/.env
+UNIFIED_PROVIDER_ENABLED=true
+CORE_API_URL=http://localhost:3000
+CORE_API_SECRET=your-shared-secret
+```
+
+**Manage providers via Core API:**
+- Seeding creates default provider: `cli-proxy-api-plus` (deepseek-v4-flash)
+- Admin can update provider via UI or API
+- Changes reflect in AI Engine within 5 minutes (cache TTL)
+
+**Emergency fallback:**
+If Core API is down or provider fetch fails, AI Engine falls back to:
+```bash
+OPENAI_API_KEY=your-api-key
+OPENAI_BASE_URL=https://your-api-url
+OPENAI_MODEL=your-model
+```
+
+### Internal Endpoint
+
+**Core API exposes:**
+```
+GET /api/internal/ai-provider/active
+Header: X-Internal-Secret: <CORE_API_SECRET>
+```
+
+**Returns:**
+```json
+{
+  "data": {
+    "id": "uuid",
+    "name": "cli-proxy-api-plus",
+    "displayName": "CLI Proxy API Plus",
+    "apiKey": "sk-ama",
+    "baseUrl": "http://...",
+    "config": {
+      "defaultModel": "deepseek-v4-flash",
+      "temperature": 0.7,
+      "maxTokens": 8192
+    }
+  }
+}
+```
+
+### Phase 2 (Future)
+
+- **Webhook invalidation**: Core API sends webhook to AI Engine on provider update for immediate cache invalidation (instead of waiting 5 minutes)
+- **Auto-failover**: Support multiple active providers with automatic failover on error
+
 ## Architecture Notes
 
 ### Data Flow
