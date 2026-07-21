@@ -1,0 +1,26 @@
+Running RAG evaluation on 20 queries...
+/Users/hshino/Kuliah/ProjectTA/Kolabri-ai-engine/app/services/embeddings.py:20: UserWarning: The model sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 now uses mean pooling instead of CLS embedding. In order to preserve the previous behaviour, consider either pinning fastembed version to 0.5.1 or using `add_custom_model` functionality.
+  self._model = TextEmbedding(model_name=self._model_name)
+
+=================================================================
+  RAG Evaluation Results — RAG vs No-RAG Baseline
+=================================================================
+  Dataset: 20 queries
+
+  Retrieval Metrics (RAG):
+    MRR@5:        1.0000
+    Precision@3:  0.9500
+
+  Answer Quality Comparison:
+                                        RAG    No-RAG     Delta
+    Keyword Coverage                  94.8%      0.0%    +94.8%
+
+  Per Query Type (RAG):
+  Type              MRR@5      P@3   Coverage
+  --------------------------------------------
+  factual          1.0000   1.0000     100.0%
+  conceptual       1.0000   0.9524     100.0%
+  procedural       1.0000   0.8667      79.0%
+=================================================================
+
+Results saved to data/evaluation/rag_evaluation_results.md

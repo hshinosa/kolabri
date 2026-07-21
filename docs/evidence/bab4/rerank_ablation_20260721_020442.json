@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-07-21T02:05:48.167342+00:00",
+  "dataset": "data/evaluation/rag_evaluation_dataset.json",
+  "collection": "course_eval",
+  "retrieve_k": 10,
+  "rerank_top_k": 3,
+  "fastembed_available": true,
+  "baseline_vector_only": {
+    "mode": "vector_only",
+    "mrr_at_5": 0.8821,
+    "precision_at_3": 0.6167,
+    "n_queries": 20
+  },
+  "with_cross_encoder_rerank": {
+    "mode": "vector_plus_rerank",
+    "rerank_model": "jinaai/jina-reranker-v2-base-multilingual",
+    "rerank_enabled_runtime": true,
+    "mrr_at_5": 0.9167,
+    "precision_at_3": 0.8167,
+    "n_queries": 20
+  },
+  "delta": {
+    "precision_at_3": 0.2,
+    "mrr_at_5": 0.0346
+  },
+  "note": "Compare to Bab4 rerank P@3 claims only if same dataset/collection populated. TA model name may differ (ms-marco vs jina)."
+}

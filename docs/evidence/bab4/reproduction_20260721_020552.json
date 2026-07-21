@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "generated_at": "2026-07-21T02:05:52.715686+00:00",
+    "host": "http://127.0.0.1:8001",
+    "engine": "kolabri-ai-engine",
+    "purpose": "Bab4 TA performance reproduction",
+    "health_probe_ms": 137.73,
+    "health_http": 200
+  },
+  "engagement_analysis": {
+    "name": "Engagement Analysis",
+    "method": "POST",
+    "path": "/api/analytics/engagement",
+    "samples": 50,
+    "concurrency": 10,
+    "success_200": 50,
+    "wall_seconds": 0.433,
+    "rps": 115.5,
+    "latency_ms": {
+      "mean": 80.85,
+      "min": 23.05,
+      "max": 176.96,
+      "p95": 159.56
+    },
+    "status_codes": {
+      "200": 50
+    }
+  },
+  "health_check": {
+    "name": "Health",
+    "method": "GET",
+    "path": "/api/health",
+    "samples": 50,
+    "concurrency": 10,
+    "success_200": 50,
+    "wall_seconds": 0.744,
+    "rps": 67.24,
+    "latency_ms": {
+      "mean": 143.31,
+      "min": 48.82,
+      "max": 256.08,
+      "p95": 238.79
+    },
+    "status_codes": {
+      "200": 50
+    }
+  },
+  "rag_cold_cached": {
+    "endpoint": "/api/ask",
+    "cold_first_ms": 1807.07,
+    "cold_http": 200,
+    "cached_repeat_mean_ms": 8.44,
+    "cached_samples": 5,
+    "speedup_x": 214.18,
+    "note": "Repeat identical query; cache hit depends on Redis/semantic cache config."
+  },
+  "rag_unique_queries": {
+    "samples": 3,
+    "latency_ms_mean": 182.71,
+    "note": "Each query unique — approximates cold RAG latency (includes LLM)."
+  }
+}

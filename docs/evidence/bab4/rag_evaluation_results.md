@@ -1,23 +1,23 @@
 # RAG Evaluation Results
 
-**Date:** 2026-05-18 00:22:11  
+**Date:** 2026-07-21 09:29:26  
 **Dataset:** `data/evaluation/rag_evaluation_dataset.json` (20 queries)
 
 ## Overall Metrics
 
 | Metric | RAG | No-RAG | Delta |
 |--------|-----|--------|-------|
-| MRR@5 | 0.8750 | — | — |
-| Precision@3 | 0.6167 | — | — |
-| Keyword Coverage | 94.0% | 84.0% | +10.0% |
+| MRR@5 | 1.0000 | — | — |
+| Precision@3 | 0.9500 | — | — |
+| Keyword Coverage | 94.8% | 0.0% | +94.8% |
 
 ## Per Query Type (RAG)
 
 | Query Type | MRR@5 | Precision@3 | Keyword Coverage |
 |------------|-------|-------------|-----------------|
-| factual | 0.7500 | 0.4583 | 96.9% |
-| conceptual | 1.0000 | 0.8571 | 96.4% |
-| procedural | 0.9000 | 0.5333 | 86.0% |
+| factual | 1.0000 | 1.0000 | 100.0% |
+| conceptual | 1.0000 | 0.9524 | 100.0% |
+| procedural | 1.0000 | 0.8667 | 79.0% |
 
 ## LaTeX Table (untuk Bab 4)
 
@@ -30,9 +30,9 @@
 \hline
 \textbf{Metrik} & \textbf{RAG} & \textbf{Tanpa RAG} & \textbf{Peningkatan} \\
 \hline
-MRR@5 & 0.8750 & — & — \\
-Precision@3 & 0.6167 & — & — \\
-Keyword Coverage & 94.0\% & 84.0\% & +10.0\% \\
+MRR@5 & 1.0000 & — & — \\
+Precision@3 & 0.9500 & — & — \\
+Keyword Coverage & 94.8\% & 0.0\% & +94.8\% \\
 \hline
 \end{tabular}
 \end{table}
