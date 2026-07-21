@@ -1,0 +1,13 @@
+schema: spec-driven
+created: 2026-07-20
+status: ready-for-apply
+title: purge-privacy-consent-residual
+owner: delegated-agent
+related:
+  - remove-out-of-scope-product-surfaces
+  - nfr-data-01-retention-policy
+  - nfr-data-02-export-portability
+notes: >
+  Primary privacy/consent routes and Prisma consent fields were already removed
+  in-tree. This change finishes residual surfaces still claiming privacy rights
+  or generating dead Wayfinder proxies, without rewriting SRS/SDD.

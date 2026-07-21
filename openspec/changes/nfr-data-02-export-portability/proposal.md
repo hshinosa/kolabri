@@ -1,6 +1,6 @@
 ## Why
 
-Kolabri only has one export endpoint (GET /api/analytics/export/:courseId) that outputs process mining JSON for lecturers. There is no CSV export, no user facing data portability, and no bulk download. This violates GDPR data portability requirements and limits lecturers from using analytics data in external tools like spreadsheets or BI platforms.
+Kolabri only has one export endpoint (GET /api/analytics/export/:courseId) that outputs process mining JSON for lecturers. There is no CSV export, no user facing data portability, and no bulk download. limits lecturers from using analytics data in external tools like spreadsheets or BI platforms.
 
 ## What Changes
 
@@ -26,4 +26,4 @@ Kolabri only has one export endpoint (GET /api/analytics/export/:courseId) that 
 - **Backend**: New export service layer, zip generation (archiver), CSV serialization (json2csv or similar)
 - **Frontend**: Analytics page gets format dropdown and export buttons; student dashboard gets "Download Data Saya" button
 - **Dependencies**: archiver (zip), json2csv or papaparse (CSV), potential file size limits and async job handling for large exports
-- **Cross reference**: User data export for GDPR portability is covered in nfr-sec-02; this change references it for the student download feature
+- **Cross reference**: User data export (if any) is covered in nfr-sec-02; this change references it for the student download feature

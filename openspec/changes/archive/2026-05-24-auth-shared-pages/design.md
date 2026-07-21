@@ -91,7 +91,7 @@ Halaman-halaman yang sudah ada:
 
 **Alternatives considered**:
 - Hard delete → Data hilang permanen, tidak bisa recovery, compliance issues
-- No deletion → Melanggar GDPR/privacy best practices
+- No deletion → Tidak tersedia penghapusan akun
 - Immediate soft delete → Tidak ada waktu untuk recovery
 
 **Rationale**: 30 hari grace period adalah standar industri (Google, GitHub). Memberikan waktu untuk recovery jika user berubah pikiran atau akun di-hack.
