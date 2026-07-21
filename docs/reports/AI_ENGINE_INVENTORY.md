@@ -31,11 +31,11 @@
   - Accepts: PDF, DOCX, PPTX, images (JPG, PNG)
   - Processing: Chunking, embedding, vector store insertion
   - Response: DocumentProcessResult with doc_id, chunks_created
-  
+
 - `POST /ingest/batch` - Batch document upload
   - Input: List of files
   - Response: BatchUploadResponse with status per document
-  
+
 - `DELETE /documents/{id}` - Remove document from vector store
   - Cascades deletion across Qdrant collections
   - Response: {"success": bool, "message": str}
@@ -46,16 +46,16 @@
   - Input: QueryRequest (query, collection_id, top_k)
   - Output: AskResponse (answer, sources, citations)
   - Uses: RAG pipeline directly
-  
+
 - `POST /chat/personal` - Personal/1-to-1 chat with RAG
   - Input: PersonalChatRequest (message, user_id, course_id)
   - Output: ChatMessage response with sources
   - Context: User-specific learning context
-  
+
 - `POST /chat/personal/stream` - Streaming personal chat
   - Server-Sent Events (SSE) streaming
   - Real-time token streaming for responsiveness
-  
+
 - `POST /reading-recommendations` - Suggest materials to read
   - Input: ReadingRecommendationRequest (user_id, goal, level)
   - Output: List of recommended materials with relevance scores
@@ -67,7 +67,7 @@
   - Input: OrchestrationRequest (user_id, group_id, message, topic, etc.)
   - Orchestrates: RAG → Analytics → Intervention Detection → Guardrails
   - Output: OrchestrationResponse with reply, interventions, analytics
-  
+
 - `POST /chat/stream` - Streaming orchestration
   - Server-Sent Events (SSE)
   - Streams: Partial reply, analytics, intervention metadata
@@ -77,19 +77,19 @@
 **File**: `app/api/routes/analytics.py`
 - `GET /analytics/engagement` - Engagement analysis for a group
   - Returns: EngagementAnalysisResponse (hot_score, col_score, lexical_variety, participation)
-  
+
 - `GET /analytics/dashboard/group/{id}` - Group performance dashboard
   - Returns: GroupAnalyticsResponse with engagement, process mining, anomalies
-  
+
 - `GET /analytics/dashboard/individual/{id}` - Individual student analytics
   - Returns: StudentAnalyticsResponse (participation, goal progress, ai_usage)
-  
+
 - `GET /export/activity/group/{id}` - Export group activity as CSV
   - Format: Columns for user, timestamp, message_count, engagement_level
-  
+
 - `GET /export/activity/chat-space/{id}` - Export chat space activity
   - Format: Conversation transcript + metadata
-  
+
 - `GET /export/process-mining/case/{id}` - Export process mining data
   - Format: Events for process discovery algorithm
   - Response: ProcessMiningExportResponse (events, case_id, timestamp)
@@ -99,11 +99,11 @@
 - `POST /intervention/analyze` - Analyze group for intervention need
   - Input: InterventionRequest (group_id, recent_messages, topic)
   - Output: InterventionResponse (should_intervene, type, suggested_action)
-  
+
 - `POST /intervention/summary` - Generate intervention summary
   - Input: SummaryRequest (group_id, message_count)
   - Output: Summary text for teacher notification
-  
+
 - `POST /intervention/prompt` - Generate redirecting prompt
   - Input: PromptRequest (group_id, issue_type, topic)
   - Output: Suggested prompt text for group intervention
@@ -112,16 +112,16 @@
 **File**: `app/api/routes/efficiency.py`
 - `GET /efficiency/cache/statistics` - Cache hit/miss statistics
   - Returns: CacheStatsResponse (hits, misses, hit_rate, entries)
-  
+
 - `POST /efficiency/cache/clear` - Clear cache
   - Clears Redis cache for efficiency optimization
-  
+
 - `GET /efficiency/statistics` - System efficiency metrics
   - Returns: Query latency, token usage, processing overhead
-  
+
 - `GET /efficiency/rate-limit/{id}` - Check rate limit for user/group
   - Returns: RateLimitResponse (remaining_requests, reset_time)
-  
+
 - `GET /efficiency/high-frequency-queries` - Identify repeated queries
   - Returns: Top query patterns for caching optimization
 
@@ -131,7 +131,7 @@
   - Input: GoalRequest (goal_text, course_id, student_id)
   - Uses: Goal validator service with Socratic method
   - Output: GoalValidationResponse (is_valid, feedback, suggestions)
-  
+
 - `POST /goals/refine` - Refine goal using Socratic questions
   - Input: GoalRequest + conversation_history
   - Output: GoalRefinementResponse (refined_goal, questions, feedback)
@@ -140,14 +140,14 @@
 **File**: `app/api/routes/groups.py`
 - `GET /groups/{id}/status` - Real-time group status
   - Returns: GroupStatusResponse (active_users, last_message, engagement_level)
-  
+
 - `POST /groups/{id}/track-participation` - Log participation event
   - Input: TrackActivityRequest (user_id, message_count, quality_score)
   - Updates: Logic Listener state for participation tracking
-  
+
 - `POST /groups/{id}/update-last-message` - Update group's last message timestamp
   - Updates: Silence detection tracking
-  
+
 - `POST /groups/{id}/set-topic` - Set/update group discussion topic
   - Updates: Topic for off-topic detection in Logic Listener
 
@@ -157,7 +157,7 @@
   - Input: message, topic
   - Uses: Embedding similarity comparison
   - Output: RelevanceCheckResponse (is_relevant, confidence_score)
-  
+
 - `POST /session-summary` - Generate summary of discussion session
   - Input: message_list, topic
   - Output: SessionSummaryResponse (summary_text, key_points, sentiment)
@@ -241,11 +241,11 @@
 - **HOT Score** (Help Others Teaching): % of messages helping peers
   - Indicators: "kamu", "kami", "ayo", "mari", "coba"
   - Target: >= 40% for healthy discussion
-  
+
 - **COL Score** (Collective Orientation): % of messages showing collective concern
   - Indicators: "kita", "bersama", "tim", "kelompok"
   - Target: >= 30% for group cohesion
-  
+
 - **Lexical Variety**: Unique word count normalized
 - **Message Diversity**: Variety in message lengths/types
 - **Sentiment Analysis**: Positive/negative/neutral distribution
@@ -268,13 +268,13 @@
    - Tracks last message timestamp per group
    - Triggers if silent > 5 minutes (configurable)
    - InterventionType.SILENCE
-   
+
 2. **Off-Topic Detection**
    - Uses embedding similarity to topic
    - Similarity < THRESHOLD → off-topic
    - InterventionType.OFF_TOPIC
    - Suggested: "Mari kita kembali ke topik utama: {topic}"
-   
+
 3. **Participation Inequity**
    - Gini coefficient calculation on message counts
    - Detects if 1-2 students dominate
@@ -951,7 +951,6 @@ Goal Refinement
 **File**: `app/utils/sensitive_data.py`
 - PII masking for logs
 - Sanitization before storing in MongoDB
-- GDPR compliance utilities
 
 ### 12.2 TEXT PROCESSOR
 **File**: `app/utils/text_processor.py`

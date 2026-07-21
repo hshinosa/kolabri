@@ -13,7 +13,7 @@
 | 1 | NFR-PERF-02 | Dashboard TTI < 2s | 🔴 HIGH | 🟢 Low | Infra cache udah ada, tinggal dipasang. Impact langsung ke UX dosen. |
 | 2 | NFR-RELIABILITY-02 | Autosave/Stability | 🔴 HIGH | 🟡 Medium | Pain nyata dari mahasiswa (Daffa). Data loss = trust loss. |
 | 3 | NFR-MNT-02 | AI Explainability | 🔴 HIGH | 🟡 Medium | Metadata explanation udah ada di AI Engine, tinggal persist + surface. Audit trail AI penting buat akuntabilitas. |
-| 4 | NFR-SEC-02 | Data Privacy | 🟠 MEDIUM-HIGH | 🟡 Medium | Compliance penting, tapi konteks akademik Indonesia belum seketat GDPR. Tetap perlu baseline. |
+| 4 | NFR-SEC-02 | Data Privacy | 🟠 MEDIUM-HIGH | 🟡 Medium | Compliance penting, tapi konteks akademik Indonesia belum ketat. Tetap perlu baseline. |
 | 5 | NFR-DATA-02 | Data Export/Portability | 🟠 MEDIUM-HIGH | 🟡 Medium | Dosen butuh rekap data. Export infrastructure bisa dipakai buat NFR-DATA-01 juga. |
 | 6 | NFR-DATA-01 | Data Retention Policy | 🟡 MEDIUM | 🟡 Medium | Soft delete udah ada. Perlu enforcement + cleanup. |
 | 7 | NFR-UI-02 | Mobile Responsiveness | 🟡 MEDIUM | 🟡 Medium | Responsive framework bagus, tapi detail mobile polish kurang. |
@@ -237,7 +237,7 @@ useDebounce(() => {
 - `DELETE /api/privacy/consent/:type` — user revoke consent
 - `GET /api/privacy/consent` — list user's consent status
 
-#### Task 4.3: User Data Export (GDPR Portability)
+#### Task 4.3: User Data Export ( Portability)
 **File baru**: `Kolabri-core-api/src/services/data-export.service.ts`
 - `POST /api/user/data-export` — trigger export semua data user:
   - Profile data (Prisma User)
