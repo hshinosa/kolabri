@@ -127,8 +127,8 @@ Otorisasi: middleware role di Core API + middleware `role:student|lecturer|admin
 **Qdrant — vektor:**
 - Collection `course_{id}` dengan metadata filter `course_id` (multi-tenancy)
 
-**MySQL (Client App) — dual-write:**
-- course_weeks, course_materials, course_week_materials (PDF file storage + material views)
+**File storage (Client App):**
+- PDF materi; metadata course weeks dan materials berada di PostgreSQL melalui Core API.
 
 ---
 
@@ -145,7 +145,7 @@ Otorisasi: middleware role di Core API + middleware `role:student|lecturer|admin
 │  Client App (Laravel BFF, port 8000)                        │
 │  - Inertia SSR + React/TS                                   │
 │  - Proxy ke Core API                                        │
-│  - MySQL (course_weeks, materials, PDF storage)              │
+│  - File storage (PDF materi)                                 │
 └──────────────┬────────────────────────────┬─────────────────┘
                │ REST                       │ Socket.IO
 ┌──────────────▼──────────────┐  ┌──────────▼─────────────────┐
@@ -171,7 +171,7 @@ Otorisasi: middleware role di Core API + middleware `role:student|lecturer|admin
 
 | Service | Owns | Tidak Boleh |
 |---|---|---|
-| Client App | UI, BFF proxy, MySQL (weeks/materials metadata + PDF), material views | Logika AI/ML, domain business logic |
+| Client App | UI, BFF proxy, file storage PDF | Logika AI/ML, domain business logic |
 | Core API | Users, courses, groups, chat spaces, messages, goals, reflections, AI data, weeks metadata (PG), socket orchestration | Direct LLM adapters (migrated to AI Engine) |
 | AI Engine | RAG, LLM, guardrails, logic listener, intervention, analytics NLP | Domain business logic, user management |
 
@@ -348,4 +348,4 @@ ProjectTA/
 3. **E2E vs blackbox**: TA menyebut 21 skenario E2E; ada 38 blackbox pytest. Definisi perlu disambungkan di footnote.
 4. **Bab 3 metodologi**: Beberapa target (100 kueri, 50+ users konkuren) melebihi eksekusi aktual. Sudah di-reframe di Bab 4 keterbatasan.
 5. **Circuit breaker/fallback**: Diimplementasi di Core API (circuit breaker service) tapi failover multi-provider belum full (Phase 2 future work).
-6. **Dual-write course_weeks**: Intentional, tapi future improvement = single source of truth di Core API.
+6. **Course weeks dan materials**: PostgreSQL Core API adalah sumber data tunggal; Client App hanya menangani UI, BFF, dan file PDF.

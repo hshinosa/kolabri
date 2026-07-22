@@ -34,7 +34,7 @@ Run the seed script from the project root:
 # Only seed core-api (PostgreSQL + MongoDB)
 ./scripts/seed-demo.sh --core-only
 
-# Only seed client-app materials (MySQL + PDFs)
+# Only seed client-app materials and PDFs
 ./scripts/seed-demo.sh --client-only
 
 # Seed without regenerating existing PDFs (faster)
@@ -152,33 +152,12 @@ Header: X-Internal-Secret: <CORE_API_SECRET>
 ### Data Flow
 
 - **Core API** owns: users, courses, groups, chat spaces, messages, learning goals, reflections, AI data, course weeks, course materials metadata (PostgreSQL + MongoDB)
-- **Client App (Laravel BFF)** owns: course weeks, course materials (metadata + PDF files), material modules, material views (MySQL)
-- **Week binding**: Chat spaces in core-api have a `weekId` field that references `course_weeks.id`. This is now a real FK in PostgreSQL (also exists in MySQL for Laravel).
+- **Client App (Laravel BFF)** owns: UI, BFF routing, and PDF file storage.
+- **Week binding**: Chat spaces in Core API have a `weekId` field that references `course_weeks.id` in PostgreSQL.
 
-### Dual-Write: Course Weeks & Materials
+### Course Weeks & Materials
 
-`course_weeks`, `course_materials`, and `course_week_materials` exist in **both** PostgreSQL (core-api) and MySQL (client-app). This is intentional:
-
-| Why PostgreSQL needs it | Why MySQL needs it |
-|---|---|
-| `resolveWeekLabelsByIds()` — returns `weekTitle`/`weekIndex` in API responses | Laravel Eloquent models for pre-read flow |
-| `assertCourseWeekBelongsToCourse()` — validates `week_id` on session creation | PDF file storage + serving via `Storage::disk('public')` |
-| `WeekContextService` — provides week context to AI engine | Material views tracking, module grouping |
-| `citationFilter` — scopes AI citations by week | `MaterialsDemoSeeder` generates actual PDF content |
-
-Both seeds use the same `seedUuid()` function → IDs are identical across databases. When seeding, **both must be run**:
-
-```bash
-# 1. Core-api seed (PostgreSQL)
-cd Kolabri-core-api && npm run db:reset:demo-data
-
-# 2. Client-app seed (MySQL + PDFs)
-cd Kolabri-client-app && php artisan db:seed --class=MaterialsDemoSeeder
-```
-
-Or use the unified script: `./scripts/seed-demo.sh`
-
-**Future improvement**: Make core-api the single source of truth for course weeks/materials metadata. Client-app would call core-api API instead of maintaining its own MySQL copy.
+`course_weeks`, `course_materials`, and `course_week_materials` exist in PostgreSQL only. Core API uses them for `resolveWeekLabelsByIds()`, `assertCourseWeekBelongsToCourse()`, `WeekContextService`, and `citationFilter`. Client App retrieves metadata through Core API and serves PDF files from `Storage::disk('public')`.
 
 ### Pre-read Flow
 
@@ -193,12 +172,12 @@ Or use the unified script: `./scripts/seed-demo.sh`
 Both the core-api seed (TypeScript) and client-app seed (PHP) use the same `seedUuid()` function to generate matching UUIDs:
 - Input: `"{courseCode}-week-{weekNumber}"` (e.g., `"IF211-week-1"`)
 - Both use MD5 hash formatted as UUID v4
-- This ensures `chatSpace.weekId` in PostgreSQL matches `course_weeks.id` in MySQL
+- This keeps material and week IDs stable across demo-data generation.
 - Material IDs also use deterministic UUIDs: `"{courseCode}-week-{weekNum}-mat-{matIndex}"`
 
 ### Course Week & Material Data
 
-The core-api seed now creates full week + material metadata in PostgreSQL:
+The Core API seed creates full week and material metadata in PostgreSQL:
 
 | Table | Count | Content |
 |---|---|---|
@@ -206,7 +185,7 @@ The core-api seed now creates full week + material metadata in PostgreSQL:
 | `course_materials` | 72 (2/week × 36 weeks) | id, course_id, title, file_name, file_path |
 | `course_week_materials` | 72 | Links weeks to materials with sort_order |
 
-Week titles match the client-app's `MaterialsDemoSeeder.php` exactly (e.g., IF201 = "Fundamental Web & React", "API & Authentication", "Deployment & Optimization").
+Week titles also define the material PDF grouping (e.g., IF201 = "Fundamental Web & React", "API & Authentication", "Deployment & Optimization").
 
 ### Group Leader (Ketua Kelompok)
 
@@ -259,7 +238,7 @@ cd Kolabri-client-app && php -l <file>
 | `Kolabri-core-api/src/services/weekContext.service.ts` | Week context for AI engine (queries course_weeks) |
 | `Kolabri-core-api/src/utils/citationFilter.ts` | AI citation filtering by week (queries course_weeks) |
 | `Kolabri-client-app/app/Http/Controllers/StudentCourseController.php` | Student course pages |
-| `Kolabri-client-app/database/seeders/MaterialsDemoSeeder.php` | Materials + PDF seeder (MySQL + file storage) |
+| `Kolabri-client-app/database/seeders/MaterialsDemoSeeder.php` | Materials + PDF seeder |
 | `Kolabri-client-app/resources/js/pages/student/courses/show.tsx` | Unified course detail page |
 | `Kolabri-client-app/resources/js/pages/student/groups/show.tsx` | Group detail page |
 | `Kolabri-client-app/resources/js/pages/student/goals/create.tsx` | Goal creation page (navigates to pre-read on back) |
