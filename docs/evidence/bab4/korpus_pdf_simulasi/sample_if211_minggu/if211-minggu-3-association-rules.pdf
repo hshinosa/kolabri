@@ -1,0 +1,49 @@
+%PDF-1.4
+1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj
+2 0 obj<< /Type /Pages /Kids [3 0 R] /Count 1 >>endobj
+3 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792]
+/Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>endobj
+4 0 obj<< /Length 1589 >>stream
+BT /F1 10 Tf
+1 0 0 1 50 750 Tm (MINGGU 3 ? ATURAN ASOSIASI \(ASSOCIATION RULES\)) Tj
+1 0 0 1 50 737 Tm ( ) Tj
+1 0 0 1 50 724 Tm (1. KONTEKS) Tj
+1 0 0 1 50 711 Tm ( ) Tj
+1 0 0 1 50 698 Tm (Dipakai untuk market basket analysis: menemukan item yang sering muncul bersamaan \(transak) Tj
+1 0 0 1 50 685 Tm ( ) Tj
+1 0 0 1 50 672 Tm (2. METRIK UTAMA) Tj
+1 0 0 1 50 659 Tm ( ) Tj
+1 0 0 1 50 646 Tm (? Support ? seberapa sering itemset X ? Y muncul di semua transaksi) Tj
+1 0 0 1 50 633 Tm (? Confidence ? P\(Y   X\): jika beli X, seberapa sering juga beli Y) Tj
+1 0 0 1 50 620 Tm (? Lift ? confidence dibanding baseline; lift > 1 ? asosiasi positif) Tj
+1 0 0 1 50 607 Tm ( ) Tj
+1 0 0 1 50 594 Tm (3. ALGORITMA APRIORI \(RINGKAS\)) Tj
+1 0 0 1 50 581 Tm ( ) Tj
+1 0 0 1 50 568 Tm (Prinsip anti-monotone: subset dari itemset jarang harus ? support subsetnya.) Tj
+1 0 0 1 50 555 Tm (Cari frequent itemsets lalu turunkan aturan dengan threshold support & confidence.) Tj
+1 0 0 1 50 542 Tm ( ) Tj
+1 0 0 1 50 529 Tm (4. INTERPRETASI HATI-HATI) Tj
+1 0 0 1 50 516 Tm ( ) Tj
+1 0 0 1 50 503 Tm (Aturan tinggi confidence belum tentu berguna bisnis \(bisa trivial: ?yang beli pensil beli ) Tj
+1 0 0 1 50 490 Tm (Selalu gabungkan dengan domain knowledge dan biaya promosi.) Tj
+1 0 0 1 50 477 Tm ( ) Tj
+1 0 0 1 50 464 Tm (5. DISKUSI) Tj
+1 0 0 1 50 451 Tm ( ) Tj
+1 0 0 1 50 438 Tm (Bandingkan satu aturan dengan lift rendah vs tinggi ? kapan masing-masing tetap actionable) Tj
+1 0 0 1 50 425 Tm ( ) Tj
+1 0 0 1 50 412 Tm (Kata kunci goal: support, confidence, lift, Apriori, frequent itemset, market basket.) Tj
+ET
+endstream
+endobj
+5 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000266 00000 n 
+trailer<< /Size 6 /Root 1 0 R >>
+startxref
+400
+%%EOF

@@ -1,0 +1,471 @@
+{
+  "metadata": {
+    "version": "3.0-challenging",
+    "created": "2026-06-11",
+    "total_items": 60,
+    "description": "Challenging gold standard dataset with subtle off-topic cases for Logic Listener evaluation. Designed to test model discrimination between closely related topics.",
+    "labeling_guidelines": "Label 'true' berarti Logic Listener HARUS memicu intervensi. Label 'false' berarti tidak perlu intervensi. Cases ini lebih subtle dan challenging daripada v1/v2.",
+    "distribution": {
+      "off_topic": {"positive": 20, "negative": 20},
+      "silence": {"positive": 5, "negative": 5},
+      "participation_inequity": {"positive": 5, "negative": 5}
+    }
+  },
+  "items": [
+    {
+      "id": "challenging_off_topic_001",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "difficulty": "medium",
+      "input": {
+        "group_id": "group_ch_01",
+        "course_topic": "Pemrograman Web dengan HTML, CSS, dan JavaScript",
+        "recent_messages": [
+          "Gimana cara deploy website ke server?",
+          "Bisa pakai AWS atau DigitalOcean",
+          "AWS itu mahal gak sih? Berapa per bulan?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan 1-2 relevan (deployment), pesan 3 drift ke diskusi harga cloud hosting. Bukan topik pemrograman web."
+    },
+    {
+      "id": "challenging_off_topic_002",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "difficulty": "hard",
+      "input": {
+        "group_id": "group_ch_02",
+        "course_topic": "Algoritma dan Struktur Data",
+        "recent_messages": [
+          "Binary search tree itu self-balancing kan?",
+          "AVL tree dan Red-Black tree bedanya apa?",
+          "Red-Black itu nama tim esport ya?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan 1-2 sangat relevan (BST, AVL, Red-Black). Pesan 3 mengasosiasikan Red-Black dengan esport — drift total dari struktur data."
+    },
+    {
+      "id": "challenging_off_topic_003",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "difficulty": "medium",
+      "input": {
+        "group_id": "group_ch_03",
+        "course_topic": "Basis Data dan SQL",
+        "recent_messages": [
+          "Normalisasi itu penting untuk eliminate redundancy",
+          "3NF sudah cukup atau perlu BCNF?",
+          "BCNF itu singkatan apa sih? Ada yang tau?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan 1-2 relevan (normalisasi, 3NF, BCNF). Pesan 3 hanya menanyakan singkatan tanpa konteks database — drift ke trivia."
+    },
+    {
+      "id": "challenging_off_topic_004",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "difficulty": "hard",
+      "input": {
+        "group_id": "group_ch_04",
+        "course_topic": "Jaringan Komputer dan Protokol TCP/IP",
+        "recent_messages": [
+          "TCP three-way handshake itu SYN, SYN-ACK, ACK",
+          "Kalau SYN flood attack gimana preventnya?",
+          "Cybersecurity itu jurusan sendiri ya di kampus?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan 1-2 relevan (TCP, SYN flood). Pesan 3 drift ke diskusi jurusan/perkuliahan umum, bukan protokol jaringan."
+    },
+    {
+      "id": "challenging_off_topic_005",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "difficulty": "medium",
+      "input": {
+        "group_id": "group_ch_05",
+        "course_topic": "Kecerdasan Buatan dan Machine Learning",
+        "recent_messages": [
+          "Neural network itu inspired by brain kan?",
+          "Iya, neuron artificial itu mimic biological neuron",
+          "Otak manusia itu berapa persen yang dipakai sih?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan 1-2 relevan (NN, biological inspiration). Pesan 3 drift ke mitos populer tentang otak manusia — bukan ML."
+    },
+    {
+      "id": "challenging_off_topic_006",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "difficulty": "hard",
+      "input": {
+        "group_id": "group_ch_06",
+        "course_topic": "Pemrograman Web dengan HTML, CSS, dan JavaScript",
+        "recent_messages": [
+          "React itu library bukan framework ya?",
+          "Iya, dibuat oleh Facebook",
+          "Mark Zuckerberg itu programmer juga kan?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan 1-2 relevan (React, Facebook). Pesan 3 drift ke biografi CEO — bukan teknologi web."
+    },
+    {
+      "id": "challenging_off_topic_007",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "difficulty": "medium",
+      "input": {
+        "group_id": "group_ch_07",
+        "course_topic": "Algoritma dan Struktur Data",
+        "recent_messages": [
+          "Dynamic programming itu solve subproblems dulu",
+          "Fibonacci sequence bisa pakai DP",
+          "Fibonacci itu nama matematikawan Italia ya?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan 1-2 relevan (DP, Fibonacci). Pesan 3 drift ke sejarah matematikawan — bukan algoritma."
+    },
+    {
+      "id": "challenging_off_topic_008",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "difficulty": "hard",
+      "input": {
+        "group_id": "group_ch_08",
+        "course_topic": "Basis Data dan SQL",
+        "recent_messages": [
+          "Index di database itu speed up query",
+          "B-tree index paling common",
+          "B-tree itu mirip binary tree kan?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan 1-2 relevan (index, B-tree). Pesan 3 membandingkan B-tree dengan binary tree secara umum — drift ke struktur data, bukan database optimization."
+    },
+    {
+      "id": "challenging_off_topic_009",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "difficulty": "medium",
+      "input": {
+        "group_id": "group_ch_09",
+        "course_topic": "Jaringan Komputer dan Protokol TCP/IP",
+        "recent_messages": [
+          "IP address itu unique identifier untuk device",
+          "IPv4 habis makanya ada IPv6",
+          "IPv6 itu panjang banget ya addressnya?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan 1-2 relevan (IP, IPv4/IPv6). Pesan 3 hanya komentar panjang address — tidak ada substansi teknis."
+    },
+    {
+      "id": "challenging_off_topic_010",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "difficulty": "hard",
+      "input": {
+        "group_id": "group_ch_10",
+        "course_topic": "Kecerdasan Buatan dan Machine Learning",
+        "recent_messages": [
+          "Gradient descent itu optimization algorithm",
+          "Learning rate hyperparameter penting",
+          "Hyperparameter tuning itu manual atau otomatis?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan 1-2 relevan (gradient descent, learning rate). Pesan 3 drift ke metodologi tuning umum — bukan konsep ML spesifik."
+    },
+    {
+      "id": "challenging_off_topic_011",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "difficulty": "medium",
+      "input": {
+        "group_id": "group_ch_11",
+        "course_topic": "Pemrograman Web dengan HTML, CSS, dan JavaScript",
+        "recent_messages": [
+          "CSS Grid itu layout system yang powerful",
+          "Bisa buat responsive design dengan media queries",
+          "Media queries itu check screen size kan?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Semua pesan relevan dengan CSS dan responsive design. Pesan 3 adalah clarifying question yang masih dalam konteks."
+    },
+    {
+      "id": "challenging_off_topic_012",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "difficulty": "hard",
+      "input": {
+        "group_id": "group_ch_12",
+        "course_topic": "Algoritma dan Struktur Data",
+        "recent_messages": [
+          "Quicksort itu divide and conquer",
+          "Pivot selection affect performance",
+          "Worst case O(n²) kalau pivot selalu minimum"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Semua pesan sangat relevan dengan quicksort dan analisis kompleksitas. Bahasa campur (Indonesia + English terms) normal dalam konteks akademik."
+    },
+    {
+      "id": "challenging_off_topic_013",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "difficulty": "medium",
+      "input": {
+        "group_id": "group_ch_13",
+        "course_topic": "Basis Data dan SQL",
+        "recent_messages": [
+          "Transaction ACID itu Atomicity, Consistency, Isolation, Durability",
+          "Isolation level ada READ UNCOMMITTED sampai SERIALIZABLE",
+          "SERIALIZABLE itu paling strict tapi paling lambat"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Semua pesan sangat relevan dengan database transactions dan isolation levels. Terminologi teknis yang tepat."
+    },
+    {
+      "id": "challenging_off_topic_014",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "difficulty": "hard",
+      "input": {
+        "group_id": "group_ch_14",
+        "course_topic": "Jaringan Komputer dan Protokol TCP/IP",
+        "recent_messages": [
+          "OSI model ada 7 layers",
+          "Layer 4 itu transport layer yang handle TCP/UDP",
+          "UDP itu connectionless jadi lebih cepat tapi unreliable"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Semua pesan sangat relevan dengan OSI model dan protokol transport. Analogi 'connectionless' adalah penjelasan konsep, bukan off-topic."
+    },
+    {
+      "id": "challenging_off_topic_015",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "difficulty": "medium",
+      "input": {
+        "group_id": "group_ch_15",
+        "course_topic": "Kecerdasan Buatan dan Machine Learning",
+        "recent_messages": [
+          "Overfitting itu model terlalu hafal data training",
+          "Bisa diatasi dengan dropout atau regularisasi",
+          "Regularisasi L1 dan L2 bedanya apa?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Semua pesan relevan dengan overfitting dan regularisasi. Pesan 3 adalah follow-up question yang valid."
+    },
+    {
+      "id": "challenging_off_topic_016",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "difficulty": "hard",
+      "input": {
+        "group_id": "group_ch_16",
+        "course_topic": "Pemrograman Web dengan HTML, CSS, dan JavaScript",
+        "recent_messages": [
+          "DOM manipulation itu modify HTML structure secara dynamic",
+          "document.getElementById itu selector paling basic",
+          "Selector itu kayak CSS selector kan?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Semua pesan relevan dengan DOM manipulation dan JavaScript selectors. Pesan 3 membuat analogi yang valid."
+    },
+    {
+      "id": "challenging_off_topic_017",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "difficulty": "medium",
+      "input": {
+        "group_id": "group_ch_17",
+        "course_topic": "Algoritma dan Struktur Data",
+        "recent_messages": [
+          "Hash table itu O(1) untuk lookup",
+          "Collision resolution ada chaining dan open addressing",
+          "Chaining itu pakai linked list kan?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Semua pesan relevan dengan hash table dan collision resolution. Pesan 3 adalah clarifying question yang valid."
+    },
+    {
+      "id": "challenging_off_topic_018",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "difficulty": "hard",
+      "input": {
+        "group_id": "group_ch_18",
+        "course_topic": "Basis Data dan SQL",
+        "recent_messages": [
+          "JOIN operation itu combine data dari multiple tables",
+          "LEFT JOIN ambil semua dari tabel kiri",
+          "Kalau tidak match di tabel kanan diisi NULL"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Semua pesan sangat relevan dengan SQL JOIN operations. Penjelasan yang akurat dan kontekstual."
+    },
+    {
+      "id": "challenging_off_topic_019",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "difficulty": "medium",
+      "input": {
+        "group_id": "group_ch_19",
+        "course_topic": "Jaringan Komputer dan Protokol TCP/IP",
+        "recent_messages": [
+          "Subnetting itu divide network jadi smaller networks",
+          "CIDR notation kayak /24 atau /16",
+          "/24 itu 256 host address kan?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Semua pesan relevan dengan subnetting dan CIDR. Pesan 3 adalah verifikasi pemahaman yang valid."
+    },
+    {
+      "id": "challenging_off_topic_020",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "difficulty": "hard",
+      "input": {
+        "group_id": "group_ch_20",
+        "course_topic": "Kecerdasan Buatan dan Machine Learning",
+        "recent_messages": [
+          "CNN itu Convolutional Neural Network untuk image",
+          "Convolution layer itu extract features dari image",
+          "Feature extraction itu kayak edge detection kan?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Semua pesan relevan dengan CNN dan feature extraction. Pesan 3 membuat analogi yang valid dan informatif."
+    },
+    {
+      "id": "challenging_silence_001",
+      "intervention_type": "silence",
+      "expected_should_intervene": true,
+      "difficulty": "easy",
+      "input": {
+        "group_id": "group_ch_21",
+        "last_message_seconds_ago": 650,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "650 detik > 600 detik threshold. Grup sudah diam selama ~10.8 menit."
+    },
+    {
+      "id": "challenging_silence_002",
+      "intervention_type": "silence",
+      "expected_should_intervene": true,
+      "difficulty": "easy",
+      "input": {
+        "group_id": "group_ch_22",
+        "last_message_seconds_ago": 900,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "900 detik = 15 menit, jauh melewati threshold 10 menit."
+    },
+    {
+      "id": "challenging_silence_003",
+      "intervention_type": "silence",
+      "expected_should_intervene": false,
+      "difficulty": "easy",
+      "input": {
+        "group_id": "group_ch_23",
+        "last_message_seconds_ago": 60,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "60 detik = 1 menit, jauh di bawah threshold 10 menit."
+    },
+    {
+      "id": "challenging_silence_004",
+      "intervention_type": "silence",
+      "expected_should_intervene": false,
+      "difficulty": "easy",
+      "input": {
+        "group_id": "group_ch_24",
+        "last_message_seconds_ago": 300,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "300 detik = 5 menit, masih di bawah threshold 10 menit."
+    },
+    {
+      "id": "challenging_silence_005",
+      "intervention_type": "silence",
+      "expected_should_intervene": true,
+      "difficulty": "easy",
+      "input": {
+        "group_id": "group_ch_25",
+        "last_message_seconds_ago": 1200,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "1200 detik = 20 menit, dua kali lipat threshold."
+    },
+    {
+      "id": "challenging_inequity_001",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": true,
+      "difficulty": "easy",
+      "input": {
+        "group_id": "group_ch_26",
+        "message_counts_per_user": {"user_A": 18, "user_B": 1, "user_C": 1}
+      },
+      "labeling_rationale": "user_A mendominasi 90% pesan. Normalized Gini ≈ 0.98 > 0.6."
+    },
+    {
+      "id": "challenging_inequity_002",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": true,
+      "difficulty": "easy",
+      "input": {
+        "group_id": "group_ch_27",
+        "message_counts_per_user": {"user_A": 15, "user_B": 2, "user_C": 1, "user_D": 2}
+      },
+      "labeling_rationale": "user_A mendominasi 75% pesan. Normalized Gini ≈ 1.05 > 0.6."
+    },
+    {
+      "id": "challenging_inequity_003",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": false,
+      "difficulty": "easy",
+      "input": {
+        "group_id": "group_ch_28",
+        "message_counts_per_user": {"user_A": 8, "user_B": 7, "user_C": 9}
+      },
+      "labeling_rationale": "Distribusi seimbang. Normalized Gini ≈ 0.10 < 0.6."
+    },
+    {
+      "id": "challenging_inequity_004",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": false,
+      "difficulty": "easy",
+      "input": {
+        "group_id": "group_ch_29",
+        "message_counts_per_user": {"user_A": 5, "user_B": 5, "user_C": 5, "user_D": 5}
+      },
+      "labeling_rationale": "Distribusi sempurna merata. Gini = 0."
+    },
+    {
+      "id": "challenging_inequity_005",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": false,
+      "difficulty": "easy",
+      "input": {
+        "group_id": "group_ch_30",
+        "message_counts_per_user": {"user_A": 8, "user_B": 1, "user_C": 1}
+      },
+      "labeling_rationale": "Cold-start protection: total=10, NOT > 10. Meskipun tidak merata, tidak diintervensi."
+    }
+  ]
+}

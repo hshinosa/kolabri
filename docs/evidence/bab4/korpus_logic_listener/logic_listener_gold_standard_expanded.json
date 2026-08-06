@@ -1,0 +1,661 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "created": "2026-06-11",
+    "total_items": 44,
+    "description": "Expanded gold standard dataset with edge cases for Logic Listener evaluation.",
+    "labeling_guidelines": "Label 'true' berarti Logic Listener HARUS memicu intervensi. Label 'false' berarti tidak perlu intervensi. Setiap item memiliki labeling_rationale yang menjelaskan alasan label.",
+    "distribution": {
+      "off_topic": {
+        "positive": 10,
+        "negative": 14
+      },
+      "silence": {
+        "positive": 5,
+        "negative": 5
+      },
+      "participation_inequity": {
+        "positive": 5,
+        "negative": 5
+      }
+    }
+  },
+  "items": [
+    {
+      "id": "off_topic_001",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_01",
+        "course_topic": "Pemrograman Web dengan HTML, CSS, dan JavaScript",
+        "recent_messages": [
+          "Eh tadi makan siang dimana guys?",
+          "Aku tadi makan di kantin, ayam gepreknya enak banget",
+          "Wah aku belum makan nih, lapar banget pengen nasi padang"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan berturut-turut tentang makanan, tidak ada hubungan dengan topik Pemrograman Web. Similarity dengan topik sangat rendah, threshold consecutive terpenuhi."
+    },
+    {
+      "id": "off_topic_002",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_02",
+        "course_topic": "Algoritma dan Struktur Data",
+        "recent_messages": [
+          "Kemarin nonton bola gak? Seru banget pertandingannya",
+          "Iya nonton, gol di menit terakhir keren parah",
+          "Tim favoritku kalah lagi deh, sedih"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan berturut-turut tentang olahraga/bola, tidak relevan dengan Algoritma dan Struktur Data."
+    },
+    {
+      "id": "off_topic_003",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_03",
+        "course_topic": "Basis Data dan SQL",
+        "recent_messages": [
+          "Film Marvel terbaru udah keluar belum ya?",
+          "Udah dong, kemarin aku udah nonton, bagus banget",
+          "Spoiler dikit dong, penasaran sama endingnya"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan tentang film/hiburan, tidak ada kaitannya dengan Basis Data dan SQL."
+    },
+    {
+      "id": "off_topic_004",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_04",
+        "course_topic": "Jaringan Komputer dan Protokol TCP/IP",
+        "recent_messages": [
+          "Liburan semester ini pada kemana nih rencananya?",
+          "Aku mau ke Bali sama keluarga, udah lama gak liburan",
+          "Enak banget, aku belum ada rencana nih masih bingung"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan tentang rencana liburan, tidak relevan dengan Jaringan Komputer."
+    },
+    {
+      "id": "off_topic_005",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_05",
+        "course_topic": "Kecerdasan Buatan dan Machine Learning",
+        "recent_messages": [
+          "Lagu baru dari band favorit aku udah keluar nih",
+          "Yang mana? Aku belum denger, link-nya dong",
+          "Ini nih, enak banget melodinya bikin semangat"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan tentang musik, tidak ada hubungan dengan Kecerdasan Buatan dan Machine Learning."
+    },
+    {
+      "id": "off_topic_006",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_06",
+        "course_topic": "Pemrograman Web dengan HTML, CSS, dan JavaScript",
+        "recent_messages": [
+          "Gimana cara bikin navbar yang responsive pakai CSS?",
+          "Bisa pakai flexbox atau grid, tergantung kebutuhan layoutnya",
+          "Aku prefer flexbox untuk navbar, lebih mudah dikontrol"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan tentang CSS dan web development, sangat relevan dengan topik Pemrograman Web. Tidak perlu intervensi."
+    },
+    {
+      "id": "off_topic_007",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_07",
+        "course_topic": "Algoritma dan Struktur Data",
+        "recent_messages": [
+          "Kompleksitas waktu quicksort rata-rata O(n log n) kan?",
+          "Iya, tapi worst case-nya O(n²) kalau pivot selalu elemen terkecil",
+          "Makanya biasanya pakai random pivot buat menghindari worst case"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan tentang algoritma sorting dan kompleksitas, sangat relevan dengan topik."
+    },
+    {
+      "id": "off_topic_008",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_08",
+        "course_topic": "Basis Data dan SQL",
+        "recent_messages": [
+          "Bedanya INNER JOIN sama LEFT JOIN apa ya?",
+          "INNER JOIN cuma ambil baris yang match di kedua tabel",
+          "LEFT JOIN ambil semua dari tabel kiri, yang gak match diisi NULL"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan tentang SQL JOIN, sangat relevan dengan topik Basis Data."
+    },
+    {
+      "id": "off_topic_009",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_09",
+        "course_topic": "Jaringan Komputer dan Protokol TCP/IP",
+        "recent_messages": [
+          "TCP itu connection-oriented, jadi ada handshaking dulu",
+          "Iya, three-way handshake: SYN, SYN-ACK, ACK",
+          "Beda sama UDP yang connectionless, lebih cepat tapi tidak reliable"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan tentang protokol TCP/UDP, sangat relevan dengan topik Jaringan Komputer."
+    },
+    {
+      "id": "off_topic_010",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_10",
+        "course_topic": "Kecerdasan Buatan dan Machine Learning",
+        "recent_messages": [
+          "Overfitting terjadi kalau model terlalu hafal data training",
+          "Bisa diatasi dengan dropout atau regularisasi L1/L2",
+          "Cross-validation juga penting buat deteksi overfitting lebih awal"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan tentang machine learning concepts, sangat relevan dengan topik."
+    },
+    {
+      "id": "silence_001",
+      "intervention_type": "silence",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_11",
+        "last_message_seconds_ago": 650,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "650 detik > 600 detik threshold. Grup sudah diam selama ~10.8 menit, intervensi diperlukan."
+    },
+    {
+      "id": "silence_002",
+      "intervention_type": "silence",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_12",
+        "last_message_seconds_ago": 720,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "720 detik = 12 menit > 10 menit threshold. Grup sudah lama tidak aktif."
+    },
+    {
+      "id": "silence_003",
+      "intervention_type": "silence",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_13",
+        "last_message_seconds_ago": 900,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "900 detik = 15 menit, jauh melewati threshold 10 menit."
+    },
+    {
+      "id": "silence_004",
+      "intervention_type": "silence",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_14",
+        "last_message_seconds_ago": 1200,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "1200 detik = 20 menit, dua kali lipat threshold. Grup sangat tidak aktif."
+    },
+    {
+      "id": "silence_005",
+      "intervention_type": "silence",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_15",
+        "last_message_seconds_ago": 1800,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "1800 detik = 30 menit, tiga kali lipat threshold. Intervensi sangat diperlukan."
+    },
+    {
+      "id": "silence_006",
+      "intervention_type": "silence",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_16",
+        "last_message_seconds_ago": 60,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "60 detik = 1 menit, jauh di bawah threshold 10 menit. Grup masih aktif."
+    },
+    {
+      "id": "silence_007",
+      "intervention_type": "silence",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_17",
+        "last_message_seconds_ago": 120,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "120 detik = 2 menit, masih jauh di bawah threshold."
+    },
+    {
+      "id": "silence_008",
+      "intervention_type": "silence",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_18",
+        "last_message_seconds_ago": 300,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "300 detik = 5 menit, tepat setengah dari threshold 10 menit."
+    },
+    {
+      "id": "silence_009",
+      "intervention_type": "silence",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_19",
+        "last_message_seconds_ago": 450,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "450 detik = 7.5 menit, masih di bawah threshold 10 menit."
+    },
+    {
+      "id": "silence_010",
+      "intervention_type": "silence",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_20",
+        "last_message_seconds_ago": 550,
+        "silence_threshold_seconds": 600
+      },
+      "labeling_rationale": "550 detik = 9.2 menit, hampir mencapai threshold tapi belum melewatinya."
+    },
+    {
+      "id": "inequity_001",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_21",
+        "message_counts_per_user": {
+          "user_A": 18,
+          "user_B": 1,
+          "user_C": 1
+        }
+      },
+      "labeling_rationale": "user_A mendominasi 90% pesan (18/20). Normalized Gini ≈ 0.98 > 0.6, total=20 > 10. Ketimpangan sangat tinggi."
+    },
+    {
+      "id": "inequity_002",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_22",
+        "message_counts_per_user": {
+          "user_A": 15,
+          "user_B": 2,
+          "user_C": 1,
+          "user_D": 2
+        }
+      },
+      "labeling_rationale": "user_A mendominasi 75% pesan (15/20). Normalized Gini ≈ 1.05 > 0.6, total=20 > 10."
+    },
+    {
+      "id": "inequity_003",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_23",
+        "message_counts_per_user": {
+          "user_A": 12,
+          "user_B": 1,
+          "user_C": 1
+        }
+      },
+      "labeling_rationale": "user_A mendominasi 86% pesan (12/14). Normalized Gini ≈ 0.91 > 0.6, total=14 > 10."
+    },
+    {
+      "id": "inequity_004",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_24",
+        "message_counts_per_user": {
+          "user_A": 20,
+          "user_B": 1
+        }
+      },
+      "labeling_rationale": "user_A mendominasi 95% pesan (20/21). Normalized Gini ≈ 0.64 > 0.6, total=21 > 10."
+    },
+    {
+      "id": "inequity_005",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_25",
+        "message_counts_per_user": {
+          "user_A": 10,
+          "user_B": 1,
+          "user_C": 1
+        }
+      },
+      "labeling_rationale": "user_A mendominasi 83% pesan (10/12). Normalized Gini ≈ 0.87 > 0.6, total=12 > 10."
+    },
+    {
+      "id": "inequity_006",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_26",
+        "message_counts_per_user": {
+          "user_A": 8,
+          "user_B": 7,
+          "user_C": 9
+        }
+      },
+      "labeling_rationale": "Distribusi seimbang. Normalized Gini ≈ 0.10 < 0.6. Tidak ada ketimpangan signifikan."
+    },
+    {
+      "id": "inequity_007",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_27",
+        "message_counts_per_user": {
+          "user_A": 5,
+          "user_B": 5,
+          "user_C": 5,
+          "user_D": 5
+        }
+      },
+      "labeling_rationale": "Distribusi sempurna merata. Gini = 0, Normalized Gini = 0 < 0.6."
+    },
+    {
+      "id": "inequity_008",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_28",
+        "message_counts_per_user": {
+          "user_A": 10,
+          "user_B": 8,
+          "user_C": 9
+        }
+      },
+      "labeling_rationale": "Distribusi hampir merata. Normalized Gini ≈ 0.09 < 0.6. Tidak perlu intervensi."
+    },
+    {
+      "id": "inequity_009",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_29",
+        "message_counts_per_user": {
+          "user_A": 8,
+          "user_B": 1,
+          "user_C": 1
+        }
+      },
+      "labeling_rationale": "Cold-start protection: total=10, NOT > 10. Meskipun distribusi tidak merata, sistem tidak memicu intervensi karena pesan masih sedikit."
+    },
+    {
+      "id": "inequity_010",
+      "intervention_type": "participation_inequity",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_30",
+        "message_counts_per_user": {
+          "user_A": 6,
+          "user_B": 7,
+          "user_C": 8,
+          "user_D": 7
+        }
+      },
+      "labeling_rationale": "Distribusi seimbang dengan 4 user. Normalized Gini ≈ 0.11 < 0.6. Partisipasi merata."
+    },
+    {
+      "id": "off_topic_031",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_31",
+        "course_topic": "Pemrograman Web dengan HTML, CSS, dan JavaScript",
+        "recent_messages": [
+          "Gimana cara bikin form login yang secure?",
+          "Bisa pakai JWT atau session-based",
+          "Eh btw tadi makan siang dimana?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "2 pesan relevan, 1 pesan off-topic di akhir. Counter reset setelah pesan relevan."
+    },
+    {
+      "id": "off_topic_032",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_32",
+        "course_topic": "Algoritma dan Struktur Data",
+        "recent_messages": [
+          "Quick sort itu divide and conquer kan?",
+          "Iya, tapi kemarin aku nonton film tentang hacker",
+          "Filmnya seru gak?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan pertama relevan, reset counter. 2 pesan off-topic tidak cukup untuk trigger."
+    },
+    {
+      "id": "off_topic_033",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_33",
+        "course_topic": "Basis Data dan SQL",
+        "recent_messages": [
+          "Liburan semester ini pada kemana?",
+          "Aku mau ke Bali",
+          "Eh btw, INNER JOIN itu gimana sih?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "2 pesan off-topic, tapi pesan ketiga relevan dan reset counter."
+    },
+    {
+      "id": "off_topic_034",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_34",
+        "course_topic": "Jaringan Komputer dan Protokol TCP/IP",
+        "recent_messages": [
+          "TCP itu connection-oriented ya?",
+          "Iya, ada three-way handshake",
+          "Handshake itu kaya salaman gak sih?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan ketiga adalah metafora tentang handshake dalam konteks TCP, masih relevan."
+    },
+    {
+      "id": "off_topic_035",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_35",
+        "course_topic": "Kecerdasan Buatan dan Machine Learning",
+        "recent_messages": [
+          "Overfitting itu apa ya?",
+          "Kayak kita belajar tapi hafalan doang",
+          "Iya, jadi gak bisa generalisasi"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Analogi dan penjelasan konsep ML menggunakan bahasa sehari-hari, masih relevan."
+    },
+    {
+      "id": "off_topic_036",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_36",
+        "course_topic": "Pemrograman Web dengan HTML, CSS, dan JavaScript",
+        "recent_messages": [
+          "React itu framework JavaScript kan?",
+          "Iya, dibuat oleh Facebook",
+          "Facebook sekarang jadi Meta ya?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan ketiga drift ke sejarah perusahaan, tidak relevan dengan pemrograman web."
+    },
+    {
+      "id": "off_topic_037",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_37",
+        "course_topic": "Algoritma dan Struktur Data",
+        "recent_messages": [
+          "Binary search itu O(log n) kan?",
+          "Iya, tapi implementasinya tricky",
+          "Tricky itu bahasa Inggris ya?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan ketiga membahas etimologi bahasa, tidak relevan dengan algoritma."
+    },
+    {
+      "id": "off_topic_038",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_38",
+        "course_topic": "Basis Data dan SQL",
+        "recent_messages": [
+          "Normalization itu penting gak?",
+          "Penting banget, reduce redundancy",
+          "Redundancy itu artinya berlebihan kan?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan ketiga membahas definisi kata, bukan konsep database."
+    },
+    {
+      "id": "off_topic_039",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_39",
+        "course_topic": "Pemrograman Web dengan HTML, CSS, dan JavaScript",
+        "recent_messages": [
+          "```javascript\nconst x = 10;\n```",
+          "```css\n.display { flex }\n```",
+          "```html\n<div>Hello</div>\n```"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan berisi code snippet yang relevan dengan pemrograman web."
+    },
+    {
+      "id": "off_topic_040",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_40",
+        "course_topic": "Algoritma dan Struktur Data",
+        "recent_messages": [
+          "```python\ndef quicksort(arr):\n    if len(arr) <= 1: return arr\n```",
+          "```python\npivot = arr[len(arr) // 2]\n```",
+          "```python\nreturn quicksort(left) + middle + quicksort(right)\n```"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Pesan berisi implementasi algoritma quicksort, sangat relevan."
+    },
+    {
+      "id": "off_topic_041",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_41",
+        "course_topic": "Pemrograman Web dengan HTML, CSS, dan JavaScript",
+        "recent_messages": [
+          "Ok",
+          "Siap",
+          "Mantap"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan sangat pendek tanpa substansi, tidak relevan dengan topik."
+    },
+    {
+      "id": "off_topic_042",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": true,
+      "input": {
+        "group_id": "group_eval_42",
+        "course_topic": "Basis Data dan SQL",
+        "recent_messages": [
+          "Yes",
+          "No",
+          "Maybe"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "3 pesan sangat pendek tanpa konten akademik."
+    },
+    {
+      "id": "off_topic_043",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_43",
+        "course_topic": "Kecerdasan Buatan dan Machine Learning",
+        "recent_messages": [
+          "Gradient descent itu optimization algorithm kan?",
+          "Iya, buat minimize loss function",
+          "Learning rate-nya harus di-tune carefully ya?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Bahasa campur dengan terminologi teknis yang relevan dengan ML."
+    },
+    {
+      "id": "off_topic_044",
+      "intervention_type": "off_topic",
+      "expected_should_intervene": false,
+      "input": {
+        "group_id": "group_eval_44",
+        "course_topic": "Jaringan Komputer dan Protokol TCP/IP",
+        "recent_messages": [
+          "Packet loss itu karena congestion kan?",
+          "Iya, atau karena physical layer error",
+          "Jadi perlu error detection mechanism?"
+        ],
+        "message_count": 3
+      },
+      "labeling_rationale": "Diskusi teknis menggunakan terminologi networking yang tepat."
+    }
+  ]
+}

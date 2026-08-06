@@ -1,0 +1,58 @@
+%PDF-1.4
+1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj
+2 0 obj<< /Type /Pages /Kids [3 0 R] /Count 1 >>endobj
+3 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792]
+/Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>endobj
+4 0 obj<< /Length 2015 >>stream
+BT /F1 10 Tf
+1 0 0 1 50 750 Tm (MINGGU 2 ? DATA PREPROCESSING & K-MEANS CLUSTERING) Tj
+1 0 0 1 50 737 Tm ( ) Tj
+1 0 0 1 50 724 Tm (Prasyarat: Minggu 1 \(CRISP-DM & jenis tugas mining\)) Tj
+1 0 0 1 50 711 Tm ( ) Tj
+1 0 0 1 50 698 Tm (1. DATA PREPROCESSING) Tj
+1 0 0 1 50 685 Tm ( ) Tj
+1 0 0 1 50 672 Tm (Langkah umum:) Tj
+1 0 0 1 50 659 Tm ( ) Tj
+1 0 0 1 50 646 Tm (? Handling missing values ? hapus baris, imputasi mean/median/mode, atau model-based) Tj
+1 0 0 1 50 633 Tm (? Outlier ? deteksi \(IQR, z-score\), cap, atau analisis domain) Tj
+1 0 0 1 50 620 Tm (? Encoding ? one-hot untuk kategorikal, scaling untuk numerik) Tj
+1 0 0 1 50 607 Tm (? Normalisasi / standardisasi ? penting untuk jarak \(mis. K-Means\)) Tj
+1 0 0 1 50 594 Tm ( ) Tj
+1 0 0 1 50 581 Tm (Kesalahan preprocessing ? cluster atau model tidak stabil dan sulit diinterpretasi.) Tj
+1 0 0 1 50 568 Tm ( ) Tj
+1 0 0 1 50 555 Tm (2. K-MEANS \(INTUISI\)) Tj
+1 0 0 1 50 542 Tm ( ) Tj
+1 0 0 1 50 529 Tm (Algoritma unsupervised:) Tj
+1 0 0 1 50 516 Tm ( ) Tj
+1 0 0 1 50 503 Tm (1. Pilih jumlah cluster k) Tj
+1 0 0 1 50 490 Tm (2. Inisialisasi k centroid) Tj
+1 0 0 1 50 477 Tm (3. Assign setiap titik ke centroid terdekat \(biasanya jarak Euclidean\)) Tj
+1 0 0 1 50 464 Tm (4. Update centroid = rata-rata titik di cluster) Tj
+1 0 0 1 50 451 Tm (5. Ulangi 3?4 hingga konvergen) Tj
+1 0 0 1 50 438 Tm ( ) Tj
+1 0 0 1 50 425 Tm (3. MEMILIH K) Tj
+1 0 0 1 50 412 Tm ( ) Tj
+1 0 0 1 50 399 Tm (? Elbow method ? plot inertia vs k, cari ?siku?) Tj
+1 0 0 1 50 386 Tm (? Silhouette score ? semakin tinggi, pemisahan cluster semakin jelas \(dalam batas tertentu) Tj
+1 0 0 1 50 373 Tm ( ) Tj
+1 0 0 1 50 360 Tm (4. LATIHAN KONSEPTUAL) Tj
+1 0 0 1 50 347 Tm ( ) Tj
+1 0 0 1 50 334 Tm (Dataset: skor mahasiswa pada 3 fitur numerik \(quiz, proyek, partisipasi\).) Tj
+1 0 0 1 50 321 Tm (Jelaskan mengapa scaling diperlulu sebelum K-Means.) Tj
+1 0 0 1 50 308 Tm ( ) Tj
+1 0 0 1 50 295 Tm (Kata kunci goal: preprocessing, missing values, K-Means, centroid, silhouette, elbow.) Tj
+ET
+endstream
+endobj
+5 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000266 00000 n 
+trailer<< /Size 6 /Root 1 0 R >>
+startxref
+400
+%%EOF

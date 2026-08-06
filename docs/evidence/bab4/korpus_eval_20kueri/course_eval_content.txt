@@ -1,0 +1,260 @@
+ALGORITMA DAN STRUKTUR DATA
+
+Algoritma Sorting
+Algoritma sorting adalah algoritma yang digunakan untuk mengurutkan elemen-elemen dalam suatu koleksi data. Terdapat beberapa jenis algoritma sorting yang umum digunakan:
+
+Bubble Sort adalah algoritma sorting sederhana yang bekerja dengan membandingkan dua elemen yang berdekatan dan menukarnya jika urutannya salah. Kompleksitas waktu bubble sort adalah O(n²) untuk kasus rata-rata dan terburuk.
+
+Quick Sort adalah algoritma sorting yang menggunakan strategi divide and conquer. Quick sort memilih sebuah elemen sebagai pivot dan mempartisi array di sekitar pivot tersebut. Kompleksitas waktu rata-rata quick sort adalah O(n log n), namun worst case-nya adalah O(n²) ketika pivot selalu elemen terkecil atau terbesar. Untuk menghindari worst case, biasanya digunakan random pivot.
+
+Merge Sort adalah algoritma sorting yang juga menggunakan divide and conquer. Merge sort membagi array menjadi dua bagian, mengurutkan masing-masing bagian secara rekursif, kemudian menggabungkannya. Kompleksitas waktu merge sort selalu O(n log n) untuk semua kasus.
+
+Insertion Sort bekerja dengan membangun array yang sudah terurut satu elemen pada satu waktu. Kompleksitas waktu insertion sort adalah O(n²) untuk kasus rata-rata dan terburuk, namun O(n) untuk kasus terbaik (array sudah terurut).
+
+Kompleksitas Waktu dan Analisis Algoritma
+Kompleksitas waktu adalah ukuran seberapa lama waktu yang dibutuhkan algoritma untuk menyelesaikan tugasnya sebagai fungsi dari ukuran input. Analisis kompleksitas waktu penting karena membantu kita memilih algoritma yang paling efisien untuk masalah tertentu.
+
+Notasi Big O digunakan untuk menggambarkan batas atas kompleksitas waktu algoritma. Beberapa notasi Big O yang umum:
+- O(1): Waktu konstan, tidak bergantung pada ukuran input
+- O(log n): Waktu logaritmik, contoh: binary search
+- O(n): Waktu linear, contoh: linear search
+- O(n log n): Contoh: merge sort, quick sort rata-rata
+- O(n²): Waktu kuadratik, contoh: bubble sort, insertion sort
+- O(2^n): Waktu eksponensial, contoh: brute force subset
+
+Performa algoritma sangat penting dalam pengembangan perangkat lunak karena mempengaruhi efisiensi sistem secara keseluruhan.
+
+Stack dan Queue
+Stack adalah struktur data yang mengikuti prinsip LIFO (Last In First Out), artinya elemen yang terakhir dimasukkan adalah yang pertama dikeluarkan. Operasi utama stack adalah push (memasukkan elemen) dan pop (mengeluarkan elemen). Stack digunakan dalam implementasi rekursi, undo/redo, dan evaluasi ekspresi.
+
+Queue adalah struktur data yang mengikuti prinsip FIFO (First In First Out), artinya elemen yang pertama dimasukkan adalah yang pertama dikeluarkan. Operasi utama queue adalah enqueue (memasukkan elemen) dan dequeue (mengeluarkan elemen). Queue digunakan dalam penjadwalan proses, antrian printer, dan BFS (Breadth First Search).
+
+Perbedaan utama antara stack dan queue adalah urutan pengeluaran elemen: stack mengeluarkan elemen dari atas (LIFO), sedangkan queue mengeluarkan elemen dari depan (FIFO).
+
+Binary Search Tree (BST)
+Binary Search Tree adalah struktur data pohon di mana setiap node memiliki paling banyak dua anak (kiri dan kiri). Properti BST: nilai node kiri selalu lebih kecil dari node induk, dan nilai node kanan selalu lebih besar dari node induk.
+
+Operasi insert pada BST:
+1. Mulai dari root
+2. Jika nilai yang dimasukkan lebih kecil dari node saat ini, pergi ke subtree kiri
+3. Jika nilai yang dimasukkan lebih besar dari node saat ini, pergi ke subtree kanan
+4. Jika posisi kosong ditemukan, masukkan node baru di sana
+
+Kompleksitas waktu operasi BST rata-rata adalah O(log n) untuk insert, search, dan delete. Namun pada kasus terburuk (pohon tidak seimbang), kompleksitasnya menjadi O(n).
+
+Algoritma Dijkstra
+Algoritma Dijkstra adalah algoritma untuk menemukan jalur terpendek (shortest path) dari satu node sumber ke semua node lain dalam graf berbobot dengan bobot non-negatif.
+
+Langkah-langkah algoritma Dijkstra:
+1. Inisialisasi jarak semua node sebagai tak terhingga, kecuali node sumber yang bernilai 0
+2. Masukkan semua node ke dalam priority queue
+3. Selama priority queue tidak kosong:
+   a. Ambil node dengan jarak terkecil (node u)
+   b. Untuk setiap tetangga v dari u:
+      - Hitung jarak alternatif: dist[u] + bobot(u,v)
+      - Jika jarak alternatif lebih kecil dari dist[v], update dist[v]
+4. Kembalikan array jarak terpendek
+
+Kompleksitas waktu Dijkstra dengan priority queue adalah O((V + E) log V) di mana V adalah jumlah vertex dan E adalah jumlah edge.
+
+---
+
+BASIS DATA
+
+Normalisasi Database
+Normalisasi database adalah proses mengorganisasi tabel dan kolom dalam database relasional untuk mengurangi redundansi data dan meningkatkan integritas data. Normalisasi dilakukan melalui beberapa tahap yang disebut Normal Form (NF).
+
+1NF (First Normal Form): Tabel berada dalam 1NF jika:
+- Setiap kolom berisi nilai atomik (tidak dapat dibagi lagi)
+- Setiap baris unik (memiliki primary key)
+- Tidak ada kelompok berulang
+
+2NF (Second Normal Form): Tabel berada dalam 2NF jika:
+- Sudah dalam 1NF
+- Setiap atribut non-key bergantung penuh pada primary key (tidak ada partial dependency)
+
+3NF (Third Normal Form): Tabel berada dalam 3NF jika:
+- Sudah dalam 2NF
+- Tidak ada transitive dependency (atribut non-key tidak bergantung pada atribut non-key lain)
+
+Langkah normalisasi dari 1NF ke 3NF:
+1. Identifikasi dan hapus partial dependency untuk mencapai 2NF
+2. Identifikasi dan hapus transitive dependency untuk mencapai 3NF
+3. Pisahkan tabel yang melanggar aturan ke dalam tabel-tabel yang lebih kecil
+
+Primary Key
+Primary key adalah kolom atau kombinasi kolom yang secara unik mengidentifikasi setiap baris dalam tabel database relasional. Karakteristik primary key:
+- Nilai harus unik untuk setiap baris
+- Nilai tidak boleh NULL
+- Setiap tabel hanya boleh memiliki satu primary key
+- Nilai primary key sebaiknya tidak berubah
+
+Primary key digunakan sebagai referensi dalam foreign key untuk membuat relasi antar tabel.
+
+Indexing Database
+Indexing adalah teknik optimasi database yang membuat struktur data tambahan untuk mempercepat operasi pencarian (query). Index bekerja seperti indeks buku: alih-alih membaca seluruh tabel, database dapat langsung melompat ke lokasi data yang dicari.
+
+Cara kerja indexing:
+1. Database membuat struktur data terpisah (biasanya B-tree atau hash) yang menyimpan nilai kolom yang diindeks beserta pointer ke baris data
+2. Saat query dijalankan, database menggunakan index untuk menemukan baris yang relevan tanpa harus membaca seluruh tabel
+3. Ini meningkatkan performa query secara signifikan, terutama untuk tabel besar
+
+Keuntungan index: mempercepat SELECT query. Kerugian: memperlambat INSERT, UPDATE, DELETE karena index harus diperbarui.
+
+---
+
+JARINGAN KOMPUTER
+
+Protokol TCP/IP dan Layer Transport
+Layer transport dalam model OSI bertanggung jawab untuk komunikasi end-to-end antara aplikasi. Dua protokol utama di layer transport adalah TCP dan UDP.
+
+TCP (Transmission Control Protocol) adalah protokol yang bersifat connection-oriented dan reliable:
+- Melakukan three-way handshake sebelum transfer data: SYN, SYN-ACK, ACK
+- Menjamin pengiriman data (acknowledgment)
+- Mengatur urutan paket (sequence number)
+- Melakukan flow control dan congestion control
+- Lebih lambat dari UDP karena overhead yang lebih besar
+
+UDP (User Datagram Protocol) adalah protokol yang bersifat connectionless dan tidak reliable:
+- Tidak ada handshaking sebelum transfer data
+- Tidak menjamin pengiriman data
+- Tidak mengatur urutan paket
+- Lebih cepat dari TCP karena overhead minimal
+- Cocok untuk streaming video, gaming, DNS
+
+Perbedaan TCP dan UDP:
+TCP lebih reliable dibandingkan UDP karena TCP menggunakan mekanisme acknowledgment (ACK) untuk memastikan setiap paket diterima. Jika paket hilang, TCP akan mengirim ulang. TCP juga menggunakan three-way handshake untuk membangun koneksi sebelum transfer data. Meskipun lebih lambat, TCP cocok untuk aplikasi yang membutuhkan keandalan seperti HTTP, email, dan transfer file.
+
+Subnetting
+Subnetting adalah teknik membagi jaringan IP menjadi sub-jaringan yang lebih kecil. Subnetting membantu mengoptimalkan penggunaan alamat IP dan meningkatkan keamanan jaringan.
+
+Untuk jaringan kelas C (192.168.x.x), subnet mask default adalah 255.255.255.0 (/24).
+
+Langkah-langkah subnetting kelas C:
+1. Tentukan jumlah subnet yang dibutuhkan
+2. Hitung jumlah bit yang dipinjam dari host portion
+3. Hitung subnet mask baru menggunakan CIDR notation
+4. Hitung network address, broadcast address, dan range host untuk setiap subnet
+
+Contoh: Jaringan 192.168.1.0/24 dibagi menjadi 4 subnet:
+- Subnet mask: 255.255.255.192 (/26)
+- Subnet 1: 192.168.1.0 - 192.168.1.63
+- Subnet 2: 192.168.1.64 - 192.168.1.127
+- Subnet 3: 192.168.1.128 - 192.168.1.191
+- Subnet 4: 192.168.1.192 - 192.168.1.255
+
+---
+
+PEMROGRAMAN WEB
+
+HTML
+HTML (HyperText Markup Language) adalah bahasa markup standar yang digunakan untuk membuat struktur halaman web. HTML mendefinisikan struktur dan konten halaman web menggunakan elemen-elemen yang ditandai dengan tag.
+
+Fungsi HTML dalam pembuatan website:
+- Mendefinisikan struktur konten (heading, paragraf, list, tabel)
+- Membuat hyperlink antar halaman
+- Menyisipkan gambar, video, dan media lain
+- Membuat form untuk input pengguna
+- Memberikan semantik pada konten (header, nav, main, footer, article)
+
+HTML bekerja bersama CSS (untuk styling) dan JavaScript (untuk interaktivitas) dalam pengembangan web modern.
+
+CSS Flexbox
+CSS Flexbox (Flexible Box Layout) adalah model layout CSS yang dirancang untuk mengatur elemen dalam satu dimensi (baris atau kolom). Flexbox memudahkan pembuatan layout yang responsif dan fleksibel.
+
+Keuntungan menggunakan CSS Flexbox dibandingkan float:
+1. Lebih mudah membuat layout yang responsif
+2. Dapat mengatur alignment secara vertikal dan horizontal dengan mudah
+3. Elemen dapat menyesuaikan ukurannya secara otomatis
+4. Tidak perlu clearfix seperti pada float
+5. Lebih intuitif untuk layout modern
+
+Properti utama Flexbox:
+- display: flex (mengaktifkan flexbox pada container)
+- flex-direction: row/column (arah utama)
+- justify-content: mengatur alignment pada sumbu utama
+- align-items: mengatur alignment pada sumbu silang
+- flex-wrap: mengatur apakah item dapat wrap ke baris baru
+
+REST API dengan JWT
+REST (Representational State Transfer) API adalah arsitektur API yang menggunakan HTTP methods (GET, POST, PUT, DELETE) untuk operasi CRUD.
+
+JWT (JSON Web Token) adalah standar untuk membuat token akses yang dapat diverifikasi. JWT terdiri dari tiga bagian: header, payload, dan signature.
+
+Cara membuat REST API dengan autentikasi JWT menggunakan Express.js:
+1. Install dependencies: express, jsonwebtoken, bcrypt
+2. Buat endpoint login yang memverifikasi kredensial dan menghasilkan JWT token
+3. Buat middleware autentikasi yang memverifikasi JWT token pada setiap request
+4. Lindungi endpoint yang membutuhkan autentikasi dengan middleware tersebut
+5. Token dikirim melalui Authorization header: Bearer <token>
+
+---
+
+KECERDASAN BUATAN DAN MACHINE LEARNING
+
+Machine Learning vs Kecerdasan Buatan
+Kecerdasan Buatan (Artificial Intelligence/AI) adalah bidang ilmu komputer yang berfokus pada pembuatan sistem yang dapat melakukan tugas yang biasanya membutuhkan kecerdasan manusia, seperti pengenalan suara, pengambilan keputusan, dan penerjemahan bahasa.
+
+Machine Learning adalah subset dari AI yang memungkinkan sistem untuk belajar dan meningkatkan kinerjanya dari pengalaman (data) tanpa diprogram secara eksplisit. Machine learning menggunakan algoritma untuk menganalisis data, belajar dari data tersebut, dan membuat keputusan atau prediksi.
+
+Perbedaan AI dan Machine Learning:
+- AI adalah konsep yang lebih luas yang mencakup semua teknik untuk membuat mesin cerdas
+- Machine Learning adalah salah satu pendekatan untuk mencapai AI menggunakan data dan algoritma pembelajaran
+- Tidak semua AI menggunakan machine learning (ada rule-based AI)
+- Semua machine learning adalah bagian dari AI
+
+Overfitting dalam Machine Learning
+Overfitting terjadi ketika model machine learning terlalu "hafal" data training sehingga tidak dapat melakukan generalisasi dengan baik pada data baru (testing). Model yang overfit memiliki performa sangat baik pada data training tetapi buruk pada data testing.
+
+Penyebab overfitting:
+- Model terlalu kompleks (terlalu banyak parameter)
+- Data training terlalu sedikit
+- Noise dalam data training ikut dipelajari
+
+Cara mengatasi overfitting:
+- Dropout: secara acak menonaktifkan beberapa neuron selama training
+- Regularisasi L1/L2: menambahkan penalti pada bobot yang besar
+- Cross-validation: membagi data menjadi beberapa fold untuk evaluasi yang lebih robust
+- Early stopping: menghentikan training ketika performa pada validation set mulai menurun
+- Augmentasi data: memperbanyak data training
+
+Supervised vs Unsupervised Learning
+Supervised Learning adalah jenis machine learning di mana model dilatih menggunakan data berlabel (labeled data). Setiap contoh training memiliki input dan output yang diharapkan. Contoh: klasifikasi email spam, prediksi harga rumah.
+
+Unsupervised Learning adalah jenis machine learning di mana model dilatih menggunakan data tidak berlabel (unlabeled data). Model harus menemukan pola atau struktur dalam data sendiri. Contoh: clustering pelanggan, deteksi anomali.
+
+Perbedaan utama:
+- Supervised: ada label/target output, tujuan memprediksi output untuk input baru
+- Unsupervised: tidak ada label, tujuan menemukan pola tersembunyi dalam data
+- Supervised cocok untuk klasifikasi dan regresi
+- Unsupervised cocok untuk clustering dan dimensionality reduction
+
+---
+
+PEMROGRAMAN BERORIENTASI OBJEK
+
+Enkapsulasi
+Enkapsulasi adalah salah satu prinsip dasar pemrograman berorientasi objek (OOP) yang menyembunyikan detail implementasi internal suatu objek dan hanya mengekspos interface yang diperlukan. Enkapsulasi dicapai dengan menggunakan access modifier (public, private, protected).
+
+Konsep enkapsulasi:
+- Class mendefinisikan atribut (data) dan method (perilaku) suatu objek
+- Atribut biasanya dibuat private untuk mencegah akses langsung dari luar class
+- Method getter dan setter digunakan untuk mengakses dan memodifikasi atribut private
+- Ini melindungi integritas data dan memudahkan pemeliharaan kode
+
+Keuntungan enkapsulasi:
+- Menyembunyikan kompleksitas implementasi
+- Meningkatkan keamanan data
+- Memudahkan perubahan implementasi tanpa mempengaruhi kode yang menggunakan class
+
+Inheritance (Pewarisan)
+Inheritance adalah mekanisme dalam OOP yang memungkinkan sebuah class (child/subclass) mewarisi atribut dan method dari class lain (parent/superclass). Inheritance mendukung konsep reusability (penggunaan kembali kode).
+
+Keuntungan inheritance dalam pemrograman berorientasi objek:
+1. Code reusability: kode yang sudah ada dapat digunakan kembali tanpa menulis ulang
+2. Hierarki yang jelas: hubungan antar class menjadi lebih terstruktur
+3. Polymorphism: child class dapat mengoverride method parent class
+4. Extensibility: mudah menambahkan fitur baru dengan membuat subclass baru
+5. Mengurangi duplikasi kode
+
+Contoh: Class Animal memiliki method eat() dan sleep(). Class Dog extends Animal dan mewarisi method tersebut, serta menambahkan method bark(). Class Cat extends Animal dan menambahkan method meow().

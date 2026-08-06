@@ -1,0 +1,233 @@
+Capstone Project
+Final Report and Documentation
+Web Chatbot Kolaboratif
+(Kolabri)
+Team Members:
+1. Soraya Haidar Salma (1302223006) — System Analyst
+2. Irham Baehaqi (1302220063) — Backend Developer (Chat & User Management)
+3. Muhammad Hashfi Hadyan (1302220079) — Backend Developer (AI Integration & Analytics)
+4. Mochammad Rizky Septian (1302220121) — Frontend Developer (Chat UI & Group Space)
+5. Ahmad Fadli Akbar (1302220126) — Frontend Developer (Dashboard & Visualization)
+6. Benedict Arvin Indra Puteprasa (1302223136) — QA Engineer
+Program Studi Sarjana Rekayasa Perangkat Lunak
+Fakultas Informatika
+Universitas Telkom
+2026
+Abstrak
+Kolabri (Web Chatbot Kolaboratif) adalah platform pembelajaran kolaboratif berbasis web untuk perguruan tinggi yang menghubungkan mahasiswa, dosen, dan agen AI dalam satu alur diskusi terstruktur. Sistem diimplementasikan sebagai tiga layanan: Client App (Laravel 12 BFF + Inertia.js/React TypeScript, port 8000), Core API (Node.js/Express TypeScript, Prisma/PostgreSQL, MongoDB, Socket.IO, Redis, port 3000), dan AI Engine (Python FastAPI, port 8001) dengan Qdrant sebagai vector store. Data domain (user, course, group, session, goal, reflection, week/material, AI provider) disimpan utama di PostgreSQL; MongoDB dipakai untuk log runtime chat/aktivitas; Qdrant untuk embedding RAG. Alur mahasiswa mengikuti siklus regulasi belajar: pre-read materi minggu → penetapan learning goal (validasi kata kerja Bloom + umpan balik AI) → diskusi kelompok real-time dengan AI orchestration (RAG, sitasi, scaffolding) → penutupan sesi → refleksi (session/weekly). Logic Listener dan pipeline intervensi memantau off-topic (kemiripan embedding), silence (ambang 10 menit di socket gate), dan partisipasi tidak merata (koefisien Gini), dengan eskalasi bertahap (new → nudge → probe-blocker → flag-lecturer → resolved). Guardrails memfilter input/output (academic dishonesty, off-topic, toxicity, PII, injection, filter Socratic). Dosen memperoleh dashboard, analytics kursus/kelompok/mahasiswa, discussion health, dan knowledge base; admin mengelola pengguna, master data, provider AI, audit log, dan usage stats. Chat pribadi (AiChat) menyediakan mode 1:1 dengan RAG. AiUsage (token/latency/biaya), AuditLog, dan ExportJob mendukung monitoring serta analisis pembelajaran. Laporan ini mendokumentasikan desain, implementasi, evaluasi berbasis pengujian perangkat lunak, tantangan, dan kesimpulan yang selaras dengan kode sumber repositori Kolabri.
+Katakunci: pembelajaran kolaboratif; chatbot edukasi; RAG; Self-Regulated Learning; Logic Listener; guardrails; Socket.IO; FastAPI; Laravel; analytics pembelajaran
+Background, Motivation, and Problem Definition
+a. Background
+Pembelajaran kolaboratif telah terbukti secara empiris memberikan dampak positif yang signifikan dalam ekosistem pendidikan tinggi, terutama dalam meningkatkan keterampilan berpikir kritis, kemampuan komunikasi, serta retensi pengetahuan mahasiswa. Meskipun manfaatnya sangat jelas, implementasi strategi ini di lingkungan akademik sering kali terhambat oleh tantangan sistemik yang mengurangi efektivitasnya. Hambatan ini tidak hanya bersifat pedagogis, tetapi juga menyentuh aspek teknis, sehingga menuntut adanya solusi terintegrasi yang mampu menjembatani teori pembelajaran dengan pemanfaatan teknologi cerdas.
+Secara pedagogis, tantangan utama yang sering muncul adalah ketimpangan partisipasi (participation inequity) dalam diskusi kelompok. Fenomena seperti free-riding atau dominasi diskusi oleh segelintir anggota menyebabkan distribusi manfaat pembelajaran yang tidak merata di antara mahasiswa. Selain itu, diskusi sering kali melebar keluar dari topik (off-topic discussion), yang mengakibatkan inefisiensi waktu dan kegagalan dalam mencapai tujuan pembelajaran. Situasi ini diperburuk oleh keterbatasan kapasitas dosen dalam memantau dinamika multipel kelompok secara simultan, khususnya di kelas besar. Akibatnya, tanpa adanya dokumentasi dan ringkasan otomatis yang memadai, proses diskusi sering kali berlalu tanpa jejak rekam yang baik, menyulitkan proses refleksi maupun penilaian objektif.
+Di sisi lain, kemajuan pesat Large Language Models (LLM) seperti Google Gemini membuka peluang baru untuk mengatasi hambatan tersebut melalui pengembangan agen pedagogis cerdas. Martha et al. (2023) telah membuktikan bahwa integrasi scaffolding adaptif dalam agen pedagogis dapat secara signifikan meningkatkan keterampilan Self-Regulated Learning (SRL) dan Co-Regulated Learning (CoRL). Potensi ini menawarkan jalan keluar bagi masalah monitoring dan fasilitasi diskusi, di mana AI dapat berperan sebagai fasilitator yang membantu menjaga fokus dan keseimbangan partisipasi dalam kelompok.
+Namun, transisi menuju penerapan AI dalam pendidikan memerlukan penanganan tantangan teknis yang serius. Risiko utama yang dihadapi adalah “halusinasi” LLM, di mana model rentan menghasilkan informasi yang meyakinkan namun faktualnya keliru. Untuk memitigasi risiko ini, pendekatan Retrieval-Augmented Generation (RAG) menjadi krusial sebagaimana ditunjukkan oleh Lewis et al. (2021), karena mampu membatasi respons AI pada konteks dokumen yang valid. Lebih jauh lagi, pengembangan sistem ini menghadapi kompleksitas dalam Requirement Engineering, di mana metode Agile tradisional sering kali gagal menangani ketidakpastian spesifikasi sistem berbasis AI (Hoy & Xu, 2023). Oleh karena itu, diperlukan arsitektur sistem yang tidak hanya cerdas dan akurat, tetapi juga mampu menjamin integritas data melalui pembentukan log terstruktur yang kompatibel dengan standar Educational Process Mining untuk keperluan riset pedagogis yang valid.
+b. Motivation
+Proyek ini termotivasi oleh tiga kesenjangan (gaps) utama antara kebutuhan pedagogis dan solusi teknologi yang tersedia:
+Gap Teoritis-Praktis: Teori regulasi belajar Zimmerman yang telah mapan secara teoretis (Forethought–Performance–Reflection) belum terimplementasi secara komprehensif dalam sistem chatbot edukasi. Sebagian besar chatbot yang ada hanya berfungsi sebagai question-answering system pasif, bukan sebagai fasilitator aktif yang mendukung seluruh siklus regulasi belajar.
+Gap Teknologi: Sistem chatbot edukasi yang ada mayoritas tidak mengintegrasikan mekanisme RAG untuk mencegah halusinasi, tidak memiliki Logic Listener untuk deteksi dinamika kelompok secara real-time, dan tidak menghasilkan data log yang terstruktur untuk analisis pembelajaran.
+Gap Infrastruktur Penelitian: Ketiadaan sistem yang menghasilkan data research-grade dengan struktur log yang mengikuti taksonomi standar (Gen-SRL) menyulitkan peneliti pendidikan untuk melakukan analisis kausal tentang efektivitas intervensi pembelajaran.
+c. Problem Definition
+Berdasarkan analisis latar belakang, proyek ini merumuskan permasalahan utama sebagai berikut:
+Permasalahan Inti:
+Bagaimana merancang dan mengimplementasikan sistem Web Chatbot Kolaboratif berbasis AI yang mampu:
+Memfasilitasi tiga tingkat regulasi belajar (SRL, CoRL, SSRL) sesuai siklus Zimmerman
+Mendeteksi dan mengintervensi dinamika kelompok yang tidak produktif (pasivitas, dominasi, off-topic) secara otomatis
+Menjamin akurasi respons AI melalui RAG dan Guardrails
+Menghasilkan data log terstruktur untuk keperluan monitoring dosen dan riset pedagogis
+Sub-Permasalahan Spesifik per Role:
+System Analyst (Soraya): Bagaimana menerjemahkan kebutuhan pedagogis abstrak (fase regulasi, deteksi off-topic) menjadi spesifikasi UML yang presisi dan implementable?
+Backend AI (Hashfi): Bagaimana mengintegrasikan RAG dengan Guardrails berlapis untuk menjamin akurasi dan keamanan, serta merancang arsitektur asinkron yang scalable?
+Backend Chat (Irham): Bagaimana membangun infrastruktur komunikasi real-time dengan latensi rendah yang mendukung transactional logging untuk integritas data?
+Frontend Chat (Rizky): Bagaimana merancang antarmuka yang mendorong otonomi mahasiswa (SRL) dan memvisualisasikan intervensi SSRL secara intuitif?
+Frontend Dashboard (Akbar): Bagaimana menyajikan data analitik kompleks (risiko kelompok, process mining) dalam visualisasi yang actionable bagi dosen?
+QA (Arvin): Bagaimana memvalidasi fungsionalitas fitur cerdas (deteksi off-topic, scaffolding adaptif) dan integritas data log untuk riset?
+Team Members and Role
+Pembagian peran disusun agar setiap area kritis sistem (spesifikasi, domain chat/user, AI/analytics, UI diskusi, dashboard, dan QA) memiliki pemilik yang jelas. Justifikasi didasarkan pada domain teknis repositori Kolabri, bukan pada pembagian formal belaka.
+Related Works
+Bagian ini merangkum landasan karya terkait yang menjadi acuan desain Kolabri. Uraian dibatasi pada referensi yang memang dipakai dalam rumusan masalah dan implementasi teknis di repositori, tanpa menambahkan klaim empiris di luar cakupan proyek.
+1. Scaffolding adaptif dan regulasi belajar
+Martha et al. (2023) menunjukkan bahwa agen pedagogis dengan scaffolding adaptif dapat mendukung keterampilan SRL dan CoRL. Kolabri mengadopsi prinsip ini melalui filter Socratic (socratic_filter), level scaffolding pada pipeline RAG/orchestration, serta alur fitur forethought–performance–reflection (goal, diskusi terpantau, refleksi).
+2. Retrieval-Augmented Generation (RAG)
+Lewis et al. (2021) menetapkan paradigma RAG untuk mengondisikan generasi bahasa pada dokumen yang diambil. Di AI Engine, RAG diimplementasikan pada app/services/rag.py dengan kebijakan FETCH/NO_FETCH, retrieval Qdrant per course, reranker, grounding verifier, dan pembatasan konteks minggu (week_rag / weekContext di Core API).
+3. Self-Regulated Learning (Zimmerman)
+Kerangka Zimmerman (fase Forethought, Performance, Self-Reflection) menjadi acuan alur produk. Di kode, fase tersebut diwujudkan sebagai: (a) LearningGoal + validasi Bloom/AI goal_validator; (b) aktivitas diskusi, pre-read, usage/analytics, SRLClassifier berbasis pola pesan; (c) Reflection bertipe session/weekly beserta UI refleksi mahasiswa.
+4. Rekayasa kebutuhan sistem AI
+Hoy & Xu (2023) menyoroti ketidakpastian spesifikasi pada sistem berbasis AI. Kolabri menjawab ini dengan pemisahan layanan (scope boundaries Client App / Core API / AI Engine), konfigurasi provider AI di basis data (AiProvider), guardrail_policy per course, dan pengujian otomatis di ketiga layanan.
+5. Posisi sistem terhadap chatbot edukasi generik
+Berbeda dengan chatbot tanya-jawab tunggal, Kolabri menggabungkan (i) chat kelompok real-time multi-pengguna, (ii) chat AI pribadi, (iii) monitoring dosen, (iv) intervensi otomatis berbasis Logic Listener + eskalasi, dan (v) jejak data untuk analytics/process mining. Posisi ini adalah diferensiasi desain produk, bukan klaim superioritas empiris terhadap produk komersial tertentu.
+Detailed Design and Specification
+Desain dan spesifikasi di bawah ini diturunkan dari implementasi repositori (Kolabri-client-app, Kolabri-core-api, Kolabri-ai-engine), bukan dari dokumen usang.
+1. Arsitektur sistem (tiga layanan)
+Infrastruktur pendukung di docker-compose.yml: PostgreSQL 16, MongoDB, Redis 7, Qdrant. Client App bertindak sebagai BFF: merender halaman Inertia dan mem-proxy sebagian request ke Core API; AI Engine dipanggil dari Core API (aiEngine.service) untuk RAG, validasi goal, intervensi, ringkasan, dan analytics NLP.
+2. Peran pengguna
+Enum UserRole di Prisma: student, lecturer, admin. Otorisasi di Core API (middleware role) dan di routes web Laravel (middleware role:student|lecturer|admin).
+Student: join course/group, pre-read, goal, chat sesi, chat AI pribadi, refleksi, analytics personal.
+Lecturer: kelola course/group/session, knowledge base, materials/weeks, analytics, discussion health, attendance, eskalasi.
+Admin: user management, master data course, AI provider settings, usage stats, audit log.
+3. Spesifikasi fungsional (FR) — ringkas berdasar modul kode
+Tabel FR berikut merangkum kebutuhan fungsional yang terimplementasi di repositori (bukan daftar aspirasional). Setiap baris menunjuk modul/path sebagai bukti.
+4. Spesifikasi non-fungsional (NFR) yang terlihat di kode
+Keamanan: helmet, rate limit (express-rate-limit / slowapi), JWT, role checks, XSS sanitization, injection detector, masking PII di pipeline AI.
+Real-time: Socket.IO dengan Redis adapter; presence room; silence lock di Redis.
+Ketahanan AI: circuit breaker service, fallback order provider (admin), degraded error handling LLM.
+Observabilitas: logging (Winston / structured logger AI), AiUsage (token, latency, cost), monitoring endpoints AI Engine.
+Kinerja chat: semantic cache / Redis di AI Engine; dashboard cache di Core API (modul dashboard-cache).
+Isolasi multi-course: filter course_id di Qdrant; otorisasi role di Core API/BFF.
+5. Model data utama
+Kolabri memakai polyglot storage dengan pemisahan tanggung jawab yang tegas: PostgreSQL adalah basis data utama untuk domain relasional; MongoDB dan Qdrant melengkapi kebutuhan log volume-tinggi dan vektor, bukan menggantikan domain PostgreSQL.
+PostgreSQL (Prisma di Core API) — sumber kebenaran domain:
+User, Course, CourseStudent, Group, GroupMember
+SessionDiscussion, SessionDiscussionPreReadCompletion, ChatMessage
+LearningGoal, Reflection
+KnowledgeBase, CourseWeek, CourseMaterial, CourseWeekMaterial
+AiChat, AiChatMessage, AiProvider, AiUsage
+EscalationState, Notification, AuditLog, ExportJob
+AttendanceSession, AttendanceRecord
+MongoDB (Mongoose / Motor) — log runtime & analytics jejak:
+ChatLog (pesan real-time + engagement analysis, pin, attachments)
+SilenceEvent, ActivityLog, mirror runtime eskalasi bila dipakai
+Log aktivitas/intervensi di AI Engine (mongodb_logger)
+Qdrant — vector store RAG:
+Collection per course (course_{id}) dengan metadata filter course_id
+Dipakai AI Engine untuk retrieval; tidak menyimpan otorisasi atau entitas domain
+Client App (BFF) merender UI, mem-proxy ke Core API, dan menyimpan file PDF materi di disk storage. Metadata minggu/materi domain tetap berakar di PostgreSQL Core API; BFF dapat memegang indeks lokal untuk penyajian file yang diselaraskan lewat seed/ID deterministik agar pre-read dan stream PDF tetap konsisten.
+6. Alur perilaku utama
+6.1 Alur mahasiswa (diskusi terstruktur)
+Login (email/password atau Google OAuth) → dashboard student.
+Masuk course → pilih group/session discussion yang terikat week.
+Pre-read materi minggu → complete pre-read (record SessionDiscussionPreReadCompletion).
+Buat/akses learning goal sesi (satu goal bersama; validasi Bloom + AI feedback).
+Join room Socket.IO; server menolak jika pre-read (dan gate terkait) belum terpenuhi.
+Kirim pesan; Core API menyimpan log, memanggil AI Engine orchestration untuk respons RAG + kemungkinan intervensi.
+Tutup sesi → generate/simpan summary; submit reflection (session dan/atau weekly).
+6.2 Pipeline AI orchestration (ringkas)
+Analisis NLP pesan (engagement/HOT/lexical bila dijalankan).
+RAG query/stream: policy FETCH/NO_FETCH → retrieval Qdrant → rerank → generasi LLM → sitasi/grounding metadata.
+Penerapan guardrails pada input/output; filter Socratic bila jawaban terlalu langsung.
+Logging aktivitas ke Mongo.
+Logic Listener / intervention service: off-topic, silence, participation inequity, quality issues.
+Bila perlu, generate pesan intervensi; eskalasi bertahap hingga flag-lecturer.
+6.3 Ambang operasional yang terdefinisi di kode
+Silence timeout socket gate: 10 menit (SILENCE_TIMEOUT_MS = 10 * 60 * 1000); SILENCE_THRESHOLD_MINUTES default 10 di AI Engine.
+Cooldown intervensi: 3 menit; quality check setelah kelipatan 5 pesan (MESSAGES_BEFORE_CHECK).
+Logic Listener: similarity off-topic default 0.6; consecutive off-topic default 3; inequity (Gini) threshold default 0.6.
+Eskalasi default: nudgeAfterMs 5 menit, probeAfterMs 10 menit (dapat dioverride aiEscalationConfig per course).
+Tahapan eskalasi: new → nudge → probe-blocker → flag-lecturer → resolved.
+7. Antarmuka (UI) per peran — halaman yang ada di resources/js/pages
+Student: dashboard, courses (index/show/attendance), groups/show, pre-read/show, goals/create, chat room (+ pin/search/edit), ai-chat, reflections, profile.
+Lecturer: dashboard, courses (create/index/show), groups, analytics (overview/detail/comparison/show), RadarChartPage; materials & course-weeks dikelola lewat controller/UI lecturer.
+Admin: dashboard, user-management, master-data, ai-settings, audit-log.
+Auth/settings: login/register/forgot-password/reset-password/verify-email, settings (profile, security, appearance, notifications).
+Development
+1. Lingkungan pengembangan
+Perangkat lunak yang dibutuhkan (sesuai package/runtime proyek):
+Node.js (Core API & tooling client), npm
+PHP 8.2+ dan Composer (Laravel client)
+Python 3.11+ (AI Engine; pyproject requires-python >=3.11)
+PostgreSQL, MongoDB, Redis, Qdrant
+Git; opsional Docker Compose untuk stack infrastruktur/services
+Variabel lingkungan inti (dari .env.example):
+Core API: PORT=3000, DATABASE_URL (PostgreSQL), MONGODB_URL, AI_ENGINE_URL=http://localhost:8001, JWT_SECRET, Redis
+AI Engine: PORT=8001, OPENAI_BASE_URL / OPENAI_API_KEY / OPENAI_MODEL, QDRANT_URL, embedding model, flag UNIFIED_PROVIDER_*
+Client App: APP_URL=http://localhost:8000, konfigurasi DB BFF, URL Core API, secrets OAuth Google bila dipakai
+Menjalankan lokal (pola dev.sh / manual):
+Start infrastruktur (postgres, mongo, redis, qdrant).
+Start AI Engine: uvicorn/main.py di :8001.
+Start Core API: npm run dev di :3000.
+Start Client App: php artisan serve (+ vite/build) di :8000.
+Seed demo: scripts/seed-demo.sh atau npm run db:reset:demo-data + MaterialsDemoSeeder.
+2. Proses pengembangan
+Pengembangan mengikuti pemisahan domain antar repositori layanan dengan kontrak HTTP/JSON dan Socket.IO. Perubahan AI tidak diletakkan di UI; Client App mem-proxy ke Core API; Core API memanggil AI Engine. Fitur pedagogis dilengkapi model data (goal, pre-read, reflection, escalation) agar alur dapat diverifikasi end-to-end. Bukti proses terlihat dari:
+Struktur monorepo layanan: Kolabri-core-api/, Kolabri-ai-engine/, Kolabri-client-app/
+Suite pengujian: ratusan berkas test di core-api (*.test.ts), ai-engine (tests/), dan client (PHPUnit + Vitest-style tests di resources/js)
+Skrip operasional: dev.sh, docker-compose.yml, scripts/seed-demo.sh
+Konfigurasi provider AI di DB + admin UI (bukan hardcode tunggal di frontend)
+ADR dan boundary docs di docs/architecture sebagai pelengkap (bukan sumber kebenaran tunggal)
+3. Pemetaan peran ke artefak kode (bukti development)
+Tabel berikut memetakan anggota tim ke area domain dan artefak kode yang menjadi jejak kerja teknis (bukan klaim ownership eksklusif git blame).
+Evaluation Process, Result, and Analysis
+Bagian evaluasi membatasi diri pada mekanisme dan artefak pengujian yang ada di repositori. Angka performa LLM atau skor pedagogis lapangan tidak diisi di sini kecuali diukur ulang secara eksplisit; laporan ini menghindari klaim yang tidak tertambat pada kode/test.
+1. Skenario evaluasi
+Pengujian unit/integration Core API (Vitest/Jest-style *.test.ts pada services, socket, routes).
+Pengujian AI Engine (pytest di tests/: RAG, guardrails, orchestration, interventions, analytics, admin routes, dsb.).
+Pengujian Client App (tests/ Laravel + unit frontend chat/summary/drag-drop).
+Skenario fungsional end-to-end manual/smoke: login multi-role, course/group, pre-read→goal→chat→close→reflection, analytics dosen, admin AI settings.
+UAT/kuesioner tersedia sebagai instrumen di docs/questionnaires (dosen & mahasiswa) untuk evaluasi pengguna; hasil lapangan terpisah dari verifikasi perangkat lunak.
+2. Pelaksanaan evaluasi (proses)
+Menjalankan suite test per layanan (npm test di core-api; pytest di ai-engine; php artisan test / npm test di client sesuai konfigurasi proyek).
+Memverifikasi alur gerbang pedagogis (pre-read & goal) baik di BFF maupun socket (kode error PRE_READ_REQUIRED).
+Memverifikasi cabang intervensi: silence lock, quality thresholds (HOT/cognitive/lexical), off-topic listener.
+Memverifikasi integrasi AI: ingest knowledge base → vector status; query RAG; personal chat stream; provider test admin.
+Memverifikasi peran: endpoint admin/lecturer/student menolak role yang tidak berwenang.
+3. Hasil (temuan implementasi — factual dari audit kode)
+Empat masalah proposal (partisipasi tidak merata, monitoring dosen, off-topic, ringkasan) memiliki path implementasi: analytics partisipasi/Gini/listener; dashboard & discussion health; off-topic detection; summary pada SessionDiscussion dan endpoint summary/regenerate.
+Dua mode chat tersedia: session group (SessionDiscussion + socket + orchestration) dan personal (AiChat).
+Siklus Zimmerman terpetakan ke fitur: goal (forethought), aktivitas diskusi/pre-read/analytics (performance), reflection (self-reflection); ditambah SRLClassifier berbasis pola teks.
+Empat guardrail pedagogis/safety tercakup di modul: no direct answers (Socratic), no complete solution / academic dishonesty, injection prevention, stay-in-context/off-topic + grounding metadata.
+Research-oriented logging: AiUsage, AuditLog, ChatLog/ActivityLog, ExportJob, ekspor XES, plan-vs-reality analyzer.
+Jumlah berkas uji yang teramati di repositori (order-of-magnitude, dapat berubah seiring commit): ~230 berkas *.test.ts di core-api, ~140 modul test_*.py di ai-engine, ~50 test PHP/JS di client — menandakan evaluasi perangkat lunak diotomatisasi, bukan hanya demo manual.
+Bukti reproduksi AI Engine (Juli 2026, docs/evidence/bab4/): suite pytest+coverage dijalankan; Locust 20 users engagement ~65 RPS (0 fail); HTTP engagement ~115 RPS; RAG rerank menaikkan P@3 pada gold 20 kueri; detail angka di REPRODUCTION_REPORT_20260721.md. Angka ini validasi teknis, bukan efektivitas pedagogis lapangan.
+4. Analisis
+Mengapa solusi menjawab problem definition: pemisahan layanan memungkinkan Core API menjaga integritas domain (user, course, session, socket) sementara AI Engine mengisolasi beban compute (embedding, retrieval, LLM). Gerbang pre-read dan goal memaksa fase forethought sebelum performance di ruang chat. Logic Listener dan eskalasi menutup gap monitoring dosen tanpa mengharuskan kehadiran manual di setiap kelompok. RAG + guardrails menempatkan respons AI pada materi kursus dan kebijakan akademik, selaras dengan risiko halusinasi yang diuraikan di latar belakang.
+Batasan interpretasi hasil: lulusnya test otomatis membuktikan kebenaran fungsional/regresi teknis pada skenario yang ditulis, bukan otomatis membuktikan peningkatan capaian belajar mahasiswa di kelas nyata. Validasi pedagogis memerlukan studi pengguna/eksperimen terpisah (instrumen UAT/kuesioner disiapkan, tetapi tidak diganti oleh unit test).
+Challenges
+Pemisahan store polyglot: domain utama di PostgreSQL; volume chat/event di MongoDB; embedding di Qdrant. Konsistensi ID week/material (deterministik) diperlukan agar pre-read BFF, Core API, dan seed tetap selaras saat PDF disajikan dari storage client.
+Konsistensi gate pedagogis: pre-read/goal harus ditegakkan di BFF (HTTP page) dan di socket join agar tidak bisa dibypass lewat klien WebSocket.
+Ambiguitas spesifikasi AI: ambang silence/off-topic/inequity dan kebijakan guardrail perlu dikonfigurasi (settings + per-course JSON) agar tidak “keras-tertanam” tanpa konteks kelas.
+Orkestrasi multi-komponen per pesan: RAG + logging + intervensi + guardrails berimplikasi pada latensi dan keharusan streaming (/chat/stream, personal stream).
+Provider LLM heterogen: abstraksi OpenAI-compatible + AiProvider DB + fallback order; flag UNIFIED_PROVIDER_* mengatur sumber konfigurasi (env vs DB).
+Keandalan real-time: presence, silence lock Redis, cooldown intervensi, dan pencegahan double-nudge pada banyak instance.
+Keseimbangan scaffolding: mencegah jawaban langsung (Socratic) tanpa membuat asisten tidak berguna; diimplementasikan sebagai filter/rewrite, bukan sekadar system prompt statis.
+Evaluasi: membedakan verifikasi software (test suite + repro performa) dari validasi ilmiah pedagogis agar klaim laporan tidak melebihi bukti.
+Conclusion
+Kolabri telah diimplementasikan sebagai platform web chatbot kolaboratif yang menyatukan diskusi kelompok real-time, chat AI pribadi, monitoring dosen, intervensi otomatis, RAG berbasis materi, dan jejak data analytics. Arsitektur tiga layanan (Client App, Core API, AI Engine) merealisasikan pemisahan tanggung jawab yang selaras dengan problem definition: regulasi belajar terfasilitasi lewat pre-read–goal–diskusi–refleksi; dinamika kelompok dipantau Logic Listener dan eskalasi; akurasi/keamanan AI ditopang RAG dan guardrails; data terstruktur tersedia untuk monitoring dan analisis lanjutan.
+Sub-permasalahan per peran terjawab pada level rekayasa perangkat lunak: spesifikasi alur dan kontrak layanan; backend chat/user dengan Socket.IO dan model relasional/dokumen; backend AI dengan pipeline orchestration; frontend chat dan dashboard; serta fondasi QA berupa suite pengujian multi-layanan. Lingkup laporan ini tidak mengklaim evaluasi efektivitas pembelajaran di lapangan melampaui bukti yang ada di repositori.
+Annex (e.g. user manual)
+A. Kredensial demo (dari seed proyek; dapat berubah sesuai environment)
+Dosen contoh (seed Agents.md): budi.santoso@univ.ac.id / password123; siti.rahayu@univ.ac.id / password123
+Mahasiswa contoh: andi.pratama@student.ac.id / password123
+Alternatif demo guide historis: lecturer@kolabri.edu / student1@kolabri.edu — gunakan yang aktif di seed environment Anda
+B. Manual ringkas per peran
+Mahasiswa
+Buka http://localhost:8000 → login.
+Pilih mata kuliah → buka sesi diskusi minggu terkait.
+Selesaikan pre-read → tetapkan goal → masuk chat room.
+Diskusikan dengan rekan; gunakan AI sesuai kebijakan kursus; tutup sesi dan isi refleksi.
+Opsional: gunakan menu AI Chat untuk konsultasi 1:1 berbasis materi.
+Dosen
+Login sebagai lecturer → dashboard.
+Kelola course, group, session discussion, unggah knowledge base.
+Pantau analytics dan discussion health; tindak lanjuti eskalasi bila ada.
+Tinjau ringkasan sesi dan partisipasi mahasiswa.
+Admin
+Login admin → user management & master data.
+Atur AI Settings (provider, activate, fallback, test connection, daftar model).
+Pantau usage stats (AiUsage) dan audit log.
+C. Endpoint AI Engine (kelompok modul)
+Health & monitoring: health, metrics, circuit-breakers, reranker health
+Documents: ingest / batch ingest / delete collection data
+Chat & RAG: /ask, personal chat (+ stream), reading recommendations
+Orchestration: /chat, /chat/stream
+Interventions: analyze, summary, prompt
+Goals: validasi/feedback goal
+Analytics & groups: metrik grup, efficiency, plan/analytics routes
+Discussion direction: classify-relevance, session-summary
+Admin: test-provider, providers/{provider}/models
+D. Struktur repositori
+Kolabri-client-app/ — UI + BFF Laravel
+Kolabri-core-api/ — domain API + socket + Prisma schema
+Kolabri-ai-engine/ — RAG, LLM, analytics, interventions
+docs/ — arsitektur, testing, kuesioner (referensi pendukung)
+D3/ — laporan capstone final (dokumen ini) + skrip extract/compile
+dev.sh, docker-compose.yml, scripts/seed-demo.sh — operasional lokal
+Referensi
+[1] Hoy, Z., & Xu, M. (2023). Challenges of AI system requirements engineering. (acuancut dalam perumusan background D3).
+[2] Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., … Kiela, D. (2021). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. Advances in Neural Information Processing Systems.
+[3] Martha, A. S. D., et al. (2023). Adaptive scaffolding in pedagogical agents for self- and co-regulated learning. (acuancut dalam background D3).
+[4] Zimmerman, B. J. (2002). Becoming a self-regulated learner: An overview. Theory Into Practice, 41(2), 64–70.
+[5] Repositori implementasi Kolabri: Kolabri-core-api, Kolabri-ai-engine, Kolabri-client-app (source of truth desain dan spesifikasi laporan ini).
+[6] Prisma schema: Kolabri-core-api/prisma/schema.prisma.
+[7] AI Engine entrypoint & config: Kolabri-ai-engine/main.py; app/core/config.py.
+[8] Socket real-time & gates: Kolabri-core-api/src/socket/index.ts; interventionGate.ts; engagement.ts.
+[9] RAG & Logic Listener: Kolabri-ai-engine/app/services/rag.py; logic_listener.py; orchestration.py; guardrails.py.

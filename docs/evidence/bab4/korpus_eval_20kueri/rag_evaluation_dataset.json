@@ -1,0 +1,175 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created": "2026-05-17",
+    "total_items": 20,
+    "description": "Dataset evaluasi RAG pipeline Kolabri AI Engine. Berisi 20 query akademik dengan expected answer keywords dan expected source.",
+    "distribution": {
+      "by_type": {"factual": 8, "conceptual": 7, "procedural": 5},
+      "by_difficulty": {"easy": 7, "medium": 8, "hard": 5}
+    },
+    "usage": "Jalankan: python scripts/run_rag_evaluation.py --save-results"
+  },
+  "items": [
+    {
+      "id": "rag_001",
+      "query": "Apa itu algoritma sorting dan sebutkan contohnya?",
+      "expected_answer_keywords": ["sorting", "bubble sort", "quick sort", "merge sort"],
+      "expected_source_contains": "algoritma",
+      "difficulty": "easy",
+      "query_type": "factual"
+    },
+    {
+      "id": "rag_002",
+      "query": "Apa perbedaan antara stack dan queue dalam struktur data?",
+      "expected_answer_keywords": ["stack", "queue", "LIFO", "FIFO"],
+      "expected_source_contains": "struktur data",
+      "difficulty": "easy",
+      "query_type": "factual"
+    },
+    {
+      "id": "rag_003",
+      "query": "Apa yang dimaksud dengan normalisasi database?",
+      "expected_answer_keywords": ["normalisasi", "redundansi", "1NF", "2NF", "3NF"],
+      "expected_source_contains": "database",
+      "difficulty": "easy",
+      "query_type": "factual"
+    },
+    {
+      "id": "rag_004",
+      "query": "Sebutkan protokol-protokol yang ada di layer transport OSI!",
+      "expected_answer_keywords": ["TCP", "UDP", "transport", "layer"],
+      "expected_source_contains": "jaringan",
+      "difficulty": "easy",
+      "query_type": "factual"
+    },
+    {
+      "id": "rag_005",
+      "query": "Apa itu HTML dan apa fungsinya dalam pembuatan website?",
+      "expected_answer_keywords": ["HTML", "markup", "struktur", "web"],
+      "expected_source_contains": "web",
+      "difficulty": "easy",
+      "query_type": "factual"
+    },
+    {
+      "id": "rag_006",
+      "query": "Apa yang dimaksud dengan primary key dalam basis data relasional?",
+      "expected_answer_keywords": ["primary key", "unik", "identifikasi", "tabel"],
+      "expected_source_contains": "basis data",
+      "difficulty": "easy",
+      "query_type": "factual"
+    },
+    {
+      "id": "rag_007",
+      "query": "Apa itu machine learning dan apa bedanya dengan AI?",
+      "expected_answer_keywords": ["machine learning", "kecerdasan buatan", "data", "model"],
+      "expected_source_contains": "kecerdasan buatan",
+      "difficulty": "easy",
+      "query_type": "factual"
+    },
+    {
+      "id": "rag_008",
+      "query": "Jelaskan konsep enkapsulasi dalam pemrograman berorientasi objek!",
+      "expected_answer_keywords": ["enkapsulasi", "class", "objek", "atribut", "method"],
+      "expected_source_contains": "pemrograman",
+      "difficulty": "medium",
+      "query_type": "factual"
+    },
+    {
+      "id": "rag_009",
+      "query": "Mengapa kompleksitas waktu penting dalam analisis algoritma?",
+      "expected_answer_keywords": ["kompleksitas", "efisiensi", "Big O", "performa"],
+      "expected_source_contains": "algoritma",
+      "difficulty": "medium",
+      "query_type": "conceptual"
+    },
+    {
+      "id": "rag_010",
+      "query": "Bagaimana cara kerja indexing dalam database untuk mempercepat query?",
+      "expected_answer_keywords": ["index", "query", "pencarian", "performa"],
+      "expected_source_contains": "database",
+      "difficulty": "medium",
+      "query_type": "conceptual"
+    },
+    {
+      "id": "rag_011",
+      "query": "Mengapa TCP lebih reliable dibandingkan UDP meskipun lebih lambat?",
+      "expected_answer_keywords": ["TCP", "UDP", "acknowledgment", "handshake", "reliable"],
+      "expected_source_contains": "jaringan",
+      "difficulty": "medium",
+      "query_type": "conceptual"
+    },
+    {
+      "id": "rag_012",
+      "query": "Apa keuntungan menggunakan CSS Flexbox dibandingkan float untuk layout?",
+      "expected_answer_keywords": ["flexbox", "layout", "responsif", "CSS"],
+      "expected_source_contains": "web",
+      "difficulty": "medium",
+      "query_type": "conceptual"
+    },
+    {
+      "id": "rag_013",
+      "query": "Bagaimana overfitting terjadi dan mengapa berbahaya dalam machine learning?",
+      "expected_answer_keywords": ["overfitting", "generalisasi", "training", "testing"],
+      "expected_source_contains": "machine learning",
+      "difficulty": "medium",
+      "query_type": "conceptual"
+    },
+    {
+      "id": "rag_014",
+      "query": "Mengapa inheritance penting dalam pemrograman berorientasi objek?",
+      "expected_answer_keywords": ["inheritance", "reusability", "class", "parent", "child"],
+      "expected_source_contains": "pemrograman",
+      "difficulty": "medium",
+      "query_type": "conceptual"
+    },
+    {
+      "id": "rag_015",
+      "query": "Apa perbedaan antara supervised dan unsupervised learning?",
+      "expected_answer_keywords": ["supervised", "unsupervised", "label", "clustering"],
+      "expected_source_contains": "machine learning",
+      "difficulty": "medium",
+      "query_type": "conceptual"
+    },
+    {
+      "id": "rag_016",
+      "query": "Bagaimana cara mengimplementasikan binary search tree dan operasi insert?",
+      "expected_answer_keywords": ["binary search tree", "insert", "node", "left", "right"],
+      "expected_source_contains": "struktur data",
+      "difficulty": "hard",
+      "query_type": "procedural"
+    },
+    {
+      "id": "rag_017",
+      "query": "Bagaimana langkah-langkah melakukan normalisasi tabel dari 1NF ke 3NF?",
+      "expected_answer_keywords": ["1NF", "2NF", "3NF", "dependensi", "normalisasi"],
+      "expected_source_contains": "database",
+      "difficulty": "hard",
+      "query_type": "procedural"
+    },
+    {
+      "id": "rag_018",
+      "query": "Bagaimana cara membuat REST API dengan autentikasi JWT menggunakan Express.js?",
+      "expected_answer_keywords": ["REST", "JWT", "token", "autentikasi", "Express"],
+      "expected_source_contains": "web",
+      "difficulty": "hard",
+      "query_type": "procedural"
+    },
+    {
+      "id": "rag_019",
+      "query": "Bagaimana cara mengimplementasikan algoritma Dijkstra untuk shortest path?",
+      "expected_answer_keywords": ["Dijkstra", "shortest path", "graph", "bobot", "node"],
+      "expected_source_contains": "algoritma",
+      "difficulty": "hard",
+      "query_type": "procedural"
+    },
+    {
+      "id": "rag_020",
+      "query": "Bagaimana cara melakukan konfigurasi subnetting untuk jaringan kelas C?",
+      "expected_answer_keywords": ["subnetting", "subnet mask", "CIDR", "IP address"],
+      "expected_source_contains": "jaringan",
+      "difficulty": "hard",
+      "query_type": "procedural"
+    }
+  ]
+}
