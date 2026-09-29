@@ -4,6 +4,7 @@ services:
   # Infrastructure
   # ============================================
   postgres:
+    restart: unless-stopped
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: postgres
@@ -27,6 +28,7 @@ services:
       retries: 5
 
   mongodb:
+    restart: unless-stopped
     image: mongo:4.4
     ports:
       - "127.0.0.1:27017:27017"
@@ -40,6 +42,7 @@ services:
       retries: 5
 
   redis:
+    restart: unless-stopped
     image: redis:7-alpine
     ports:
       - "127.0.0.1:6379:6379"
@@ -51,6 +54,7 @@ services:
       retries: 5
 
   qdrant:
+    restart: unless-stopped
     image: qdrant/qdrant:latest
     ports:
       - "127.0.0.1:6333:6333"
@@ -69,6 +73,7 @@ services:
   # Application Services
   # ============================================
   ai-engine:
+    restart: unless-stopped
     build:
       context: ./Kolabri-ai-engine
       dockerfile: Dockerfile
@@ -94,6 +99,10 @@ services:
       CORE_API_SECRET: shared-secret-key
       QDRANT_URL: http://qdrant:6333
       QDRANT_COLLECTION_PREFIX: kolabri
+      EMBEDDING_PROVIDER: voyage
+      VOYAGE_API_KEY: ${VOYAGE_API_KEY:-}
+      VOYAGE_MODEL: ${VOYAGE_MODEL:-voyage-3.5}
+      VOYAGE_OUTPUT_DIMENSION: "1024"
       EMBEDDING_MODEL: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
       HF_TOKEN: ""
       ENABLE_EFFICIENCY_GUARD: "true"
@@ -117,6 +126,7 @@ services:
       start_period: 30s
 
   core-api:
+    restart: unless-stopped
     build:
       context: ./Kolabri-core-api
       dockerfile: Dockerfile
@@ -124,8 +134,8 @@ services:
       - "127.0.0.1:3000:3000"
     environment:
       PORT: "3000"
-      NODE_ENV: development
-      DEBUG: "*"
+      NODE_ENV: production
+      DEBUG: ""
       NODE_OPTIONS: "--max-old-space-size=256"
       DATABASE_URL: postgresql://postgres:123hshi@postgres:5432/kolabri-db?schema=public
       MONGODB_URL: mongodb://mongodb:27017/kolabri
@@ -156,6 +166,7 @@ services:
       start_period: 10s
 
   client-app:
+    restart: unless-stopped
     build:
       context: ./Kolabri-client-app
       dockerfile: Dockerfile
@@ -177,7 +188,7 @@ services:
       AI_ENGINE_URL: http://ai-engine:8001
       SOCKET_URL: http://localhost:3000
       VITE_SOCKET_URL: http://localhost:3000
-      SESSION_DRIVER: file
+      SESSION_DRIVER: database
       CACHE_STORE: file
       QUEUE_CONNECTION: sync
       PHP_FPM_PM: static
