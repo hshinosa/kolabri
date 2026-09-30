@@ -83,10 +83,10 @@ services:
       HOST: "0.0.0.0"
       PORT: "8001"
       ENV: development
-      DEBUG: "true"
-      LOG_LEVEL: "DEBUG"
+      DEBUG: "false"
+      LOG_LEVEL: "INFO"
       LOG_FORMAT: "console"
-      DOCS_ENABLED: "true"
+      DOCS_ENABLED: "false"
       UNIFIED_PROVIDER_ENABLED: "true"
       REDIS_HOST: redis
       REDIS_PORT: "6379"
