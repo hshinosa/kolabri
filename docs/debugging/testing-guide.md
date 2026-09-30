@@ -113,21 +113,14 @@ curl -X POST http://localhost:8001/api/chat/personal/stream \
 ```
 data: {"content": "Algoritma adalah..."}
 data: {"content": " langkah-langkah..."}
-data: {"done": true}
+data: [DONE]
 ```
 
-### Test AI Chat (Non-Streaming)
+### Test AI Chat (Non-Streaming) — DIHAPUS
 
-```bash
-curl -X POST http://localhost:8001/api/chat/personal \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $CORE_API_SECRET" \
-  -d '{
-    "message": "Jelaskan tentang database",
-    "history": [],
-    "course_ids": []
-  }' | jq
-```
+Endpoint `POST /api/chat/personal` dan `POST /api/chat` sudah dihapus:
+inference chat kini streaming-only. Endpoint lama mengembalikan **404**;
+gunakan endpoint stream di atas.
 
 ### Test OpenAI Provider Directly
 
