@@ -22,8 +22,8 @@ Status: ✅ terbukti jalan (live) · ⚠️ anomali/butuh verifikasi manual · �
 |10| Kirim pesan chat | ✅ | muncul + **bertahan setelah reload** |
 |11| Muat pesan lebih lama | ✅ | tombol terlihat & terverifikasi vision |
 |12| **@ai → jawaban streaming** | ✅ | engine `POST /api/chat/stream` 200, jawaban muncul |
-|13| **Edit pesan (Ubah pesan)** | ❌ | lihat Temuan F1/F2 |
-|14| **Hapus pesan** | ⚠️/❌ | menu ada; klik tak menghasilkan request (terinstrumentasi); jalur API terpisah bermasalah — lihat F1/F3 |
+|13| **Edit pesan (Ubah pesan)** | ✅ (API) | `PATCH .../edit → 200` + audit row; klik UI masih F3 |
+|14| **Hapus pesan** | ✅ (API) | `DELETE .../{id} → 200` + audit row (setelah route nginx ditambah); klik UI masih F3 |
 |15| Salin teks | 📋 | item menu ada |
 |16| Pin/Unpin pesan | 📋 | route pin ada; item tak muncul di menu mahasiswa (kemungkinan khusus moderator — belum diverifikasi) |
 |17| **Tutup sesi → ringkasan AI** | ✅ | modal konfirmasi → sesi ditutup → ringkasan live ±15 dtk (isi akurat) |
@@ -59,14 +59,37 @@ Status: ✅ terbukti jalan (live) · ⚠️ anomali/butuh verifikasi manual · �
 
 ##4. Temuan (diurut keparahan)
 
-### ❌ F1 — Edit pesan mengembalikan500 (rusak)
+### ✅ F1 — Edit pesan mengembalikan500 (DIPERBAIKI 2026-10-04)
 - **Bukti:** `PATCH /api/chat/messages/{id}/edit` dengan sesi login valid → `500 Server Error`.
 - **Akar (terbaca):** `MessageController::edit` baris22: `$userId = $request->user()->id;` — `$request->user()` = **null** → `Attempt to read property "id" on null` (laravel.log,3 kejadian =3 percobaan audit).
 - **Konteks route:** route berada di grup `middleware('auth.jwt')` + `assert.chat.membership`; request ber-cookie sesi lolos middleware namun user tak ter-set →500, bukan401.
 - **Dampak:** fitur "Ubah pesan" tidak bisa menyimpan untuk siapa pun yang memakai alur auth halaman (cookie) — editor tetap terbuka.
 
-### ⚠️ F2 — Hapus pesan: jalur API terbukti401 pada pengujian langsung
+### ✅ F2 — Hapus pesan: jalur API 401 (DIPERBAIKI 2026-10-04; akar ganda)
 - `DELETE /api/chat/messages/{id}` → `401 No token provided` (format error ala Core API) sementara route hanya bermiddleware `assert.chat.membership`. Selain itu `destroy()` juga memakai `$request->user()->id` (baris103) → rawan kasus sama dengan F1.
+
+### Perbaikan F1/F2 (bukti verifikasi live)
+
+**Akar 1 (kedua temuan):** `auth.jwt` (`app/Http/Middleware/JwtAuthMiddleware.php:73`) hanya
+`$request->merge(['auth_user' => session('user')])` dan **tidak pernah mengisi auth guard Laravel**,
+jadi `$request->user()` selalu `null`. `MessageController:22/103/120` + `PinnedMessageController:23/26/84`
+memakai `$request->user()` → `Attempt to read property "id" on null` → 500.
+
+**Akar 2 (khusus F2):** route `DELETE /api/chat/messages/{messageId}` **tidak terdaftar di nginx**
+(`/etc/nginx/sites-enabled/kolabri.web.id:69` hanya mencocokkan `[^/]+/(edit|audit|pin)`), sehingga request
+jatuh ke `location /api/` → core-api → `401 No token provided`. Ditambahkan `location ~ ^/api/chat/messages/[^/]+$`.
+
+**Perubahan kode:** helper `resolveAuthUser()` di kedua controller (pola rumah: `auth_user` ?? `session('user')`,
+tolak 401 jika kosong, cast id ke string; role check jadi strict `in_array(..., true)`).
+Commit: `Kolabri-client-app@a74fa05`, pointer root `ac30a03`.
+
+**Verifikasi live (kolabri.web.id, akun pemilik sesi):**
+| Aksi | Sebelum | Sesudah |
+|---|---|---|
+| `PATCH /api/chat/messages/{id}/edit` | 500 | **200** + row `chat_message_audit(action=edit, user_id=620e742a…)` |
+| `DELETE /api/chat/messages/{id}` | 401 | **200** + row `chat_message_audit(action=delete)` |
+| Edit oleh non-anggota | 500 | **403** |
+| Log client-app | 500 berulang | **0 error** |
 
 ### ⚠️ F3 — Klik "Simpan edit"/"Hapus pesan" tidak menghasilkan request keluar browser (terinstrumentasi)
 - XHR/fetch di-patch: **0 request** setelah klik, baik di pesan baru maupun pesan lama hasil muat server; state editor benar (nilai terisi, tombol enabled); jalur keyboard Enter pun nihil.
@@ -96,8 +119,8 @@ Status: ✅ terbukti jalan (live) · ⚠️ anomali/butuh verifikasi manual · �
 
 ##6. Rekomendasi tindakan
 
-1. **Perbaiki F1** (guard `auth.jwt`/`$request->user()` — user harus ter-set; kembalikan401 bukan500) — prioritas1.
-2. **Selidiki F3** dengan verifikasi manual sekali (klik Simpan di browser sungguhan + Network tab) untuk memisahkan bug UI vs otomasi.
+1. ~~Perbaiki F1~~ **SELESAI** — `resolveAuthUser()` + jalur nginx delete; terverifikasi live 200.
+2. **Selidiki F3** dengan verifikasi manual sekali (klik Simpan di browser sungguhan + Network tab) untuk memisahkan bug UI vs otomasi. **Catatan penting:** jalur API sudah 200, jadi bila klik UI tetap tak mengirim request, akar F3 murni di klien.
 3. Ingest materi → Qdrant (menghidupkan sitasi, F5).
 4. Putuskan F7 (verifikasi email admin) & F6 (aturan pin).
 5. Tambahkan sisa flow (F9) ke panduan pengguna setelah lolos uji.
