@@ -6,7 +6,7 @@ read_only: false
 ---
 
 # Current State — Kolabri (ProjectTA)
-**Last updated:** 2026-10-04
+**Last updated:** 2026-10-06
 
 ## Ships in this batch (all pushed)
 
@@ -77,6 +77,45 @@ hapus materi → collection kembali **0 points**. Retrieval terbukti: `CRISP-DM`
   (by design, bukan bug).
 - Demo lama `knowledge_bases.file_path = /demo/kb/...` → file tidak ada di container; tidak akan
   pernah selesai ingest. Hanya materi yang di-upload lewat aplikasi yang bisa `ready`.
+
+## Docker deploy — bisa jalan dari clone segar (2026-10-06, verified)
+
+**Masalah lama:** `deploy.sh` ada di `.gitignore` → fresh clone tak pernah dapatnya, padahal
+`DEPLOYMENT.md` menyuruh menjalankan. Kalau dijalankan pun gagal: wajib `docker-compose` (v1) yang
+tak ada di sumo1/vpsgw, menolak root, `read` prompt (abort di non-TTY karena `set -e`), typo
+`Kolibri-` di `rm`, dan `nginx/ssl/` kosong → nginx crash di `listen 443`.
+
+**Fix (repo root):**
+- `31fe863` — `deploy.sh` tracked + ditulis ulang: deteksi `docker compose` v2 / v1, boleh root,
+  non-interactive safe (`--yes`), flag baru `--check`/`--no-cache`/`--no-nginx`/`--status`,
+  auto-mint TLS self-signed, **rotate `APP_KEY`** kalau masih memakai nilai yang ter-commit di
+  `.env.production.example` (nilai itu publik → semua deploy berbagi satu encryption key),
+  aktifkan profile `docker-nginx` default. Juga: `DB_SCHEMA app→public` di `docker-compose.yml`,
+ 14 typo `Kolibri-`→`Kolabri-`, docs pindah ke `docker compose` v2.
+- `38baace` — ignore root `/.env` (berisi password kompose, dibuat `deploy.sh`).
+- `37f49ec` — **`client-app`/`core-api` tidak mem-publish port host** → tanpa nginx, deploy selesai
+  tapi tak bisa diakses. Tambah loopback `127.0.0.1:${CLIENT_APP_PORT:-18000}:80` dan
+  `${CORE_API_PORT:-13000}:3000` (persis pola sumo1). `deploy.sh` kini fail-fast kalau `:80/:443`
+  sudah dipakai host (nginx sumo1/vpsgw) dan menyarankan `--no-nginx`.
+
+**Terverifikasi (vpsgw, clone segar):** `./deploy.sh --yes --check` → buat3 `.env.production` +
+root `.env` + TLS, `APP_KEY` di-rotate, config valid,8 service di profile `docker-nginx`, deteksi
+port conflict bekerja; `docker compose build core-api` **sukses** (106 detik).
+
+**BELUM diverifikasi:** boot stack penuh (`up -d`) dan build `client-app`/`ai-engine` — RAM vpsgw
+hanya ~1.8Gi tersedia dengan52 container berjalan, risiko OOM & mengganggu service lain. Perlu host
+bersih / RAM bebas untuk uji end-to-end.
+
+**Jalur deploy berbeda, jangan tertukar:**
+- **sumo1 (produksi)** → `/opt/kolabri/docker-compose.yml`, varian di-patch manual (password
+  `df432ee3…`, port `15432`/`27018`/`16333`, mongo `--auth`), **beda117 baris** dgn repo.
+  JANGAN ditimpa dari repo.
+- **host baru** → `./deploy.sh` (memakai `docker-compose.production.yml`).
+
+**Secret lintas-service konsisten** dengan nilai default `.env.production.example`
+(`change-this-to-strong-secret-in-production`): client-app→core-api pakai `CORE_API_INTERNAL_SECRET`
+(fallback `AI_ENGINE_SECRET`), core-api→ai-engine pakai `AI_ENGINE_SECRET` divalidasi sbg
+`CORE_API_SECRET`; `verifyInternalSecret` menerima `X-Internal-Secret` ATAU `Authorization: Bearer`.
 
 ## Open items (not started)
 
