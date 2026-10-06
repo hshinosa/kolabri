@@ -98,8 +98,17 @@ Commit: `Kolabri-client-app@a74fa05`, pointer root `ac30a03`.
 > Fix: `Kolabri-core-api@4b93a1a` + `Kolabri-client-app@503c400`, ter-deploy & terbukti live
 > (`deletedAt`/`editedAt`/`version` kini terisi; sebelumnya **0 dari 1307** dokumen punya
 > `deletedAt`). F3 di bawah (klik tak menghasilkan request) **masih terbuka** — sisa murni klien.
+>
+> **DITUTUP 2026-10-06:** direproduksi di browser nyata dengan **dua metode** — klik
+> programatis (`el.click()`) dan **klik koordinat asli** (`Input.dispatchMouseEvent`, kena
+> hit-testing) — keduanya sukses: `PATCH .../edit` + `DELETE .../{id}` keluar, toast
+> "berhasil", **persist di Mongo** (`editedAt`+`version` / `deletedAt` terisi), console
+> bersih, `window.confirm` & `Array.prototype.find` terpanggil normal. Kode handler identik
+> dengan versi 4 Okt (commit `b9be6a1`); bundle berubah karena deploy `503c400` (6 Okt).
+> Kesimpulan: tidak repro pada produksi terkini — jika muncul lagi, butuh 1 kasus klik user
+> nyata untuk repro. Bukti: `e2e_flows/f3_repro.js` + `e2e_flows/f3_trusted.js`.
 
-### ⚠️ F3 — Klik "Simpan edit"/"Hapus pesan" tidak menghasilkan request keluar browser (terinstrumentasi)
+### ✅ F3 — Klik "Simpan edit"/"Hapus pesan" tidak menghasilkan request keluar browser (DITUTUP 2026-10-06 — tidak repro lagi)
 - XHR/fetch di-patch: **0 request** setelah klik, baik di pesan baru maupun pesan lama hasil muat server; state editor benar (nilai terisi, tombol enabled); jalur keyboard Enter pun nihil.
 - Bundle `MessageEditor`/`room` di produksi = source (dicek byte-level handler-nya identik).
 - **Belum terpecahkan:** apakah `messages.find()` di `handleSaveEdit` gagal (array vs list render) atau hal lain — **butuh1 verifikasi manual di browser nyata** (apakah muncul error toast/permintaan jaringan saat klik Simpan). Kombinasi dengan F1: walau UI mengirim, server tetap500.
@@ -118,8 +127,15 @@ Commit: `Kolabri-client-app@a74fa05`, pointer root `ac30a03`.
 ### 📌 F5 — Sitasi RAG mati di produksi
 - Qdrant:9 collection `course_*` semuanya **`points_count:0`** (materi belum ter-ingest vektor) → `@ai` selalu menjawab "tidak menemukan dokumen" + panel "DIKUTIP DALAM DISKUSI" selalu "Belum ada sitasi".
 
-### 📌 F6 — Pin pesan: route+komponen ada, tak muncul di menu mahasiswa
+### ✅ F6 — Pin pesan: route+komponen ada, tak muncul di menu mahasiswa (DIPERBAIKI 2026-10-06)
 - Route `POST|DELETE .../pin` + komponen `PinnedMessages` ada; menu aksi mahasiswa hanya Salin/Ubah/Hapus. Kemungkinan `canPin` sengaja dibatasi non-mahasiswa (belum diverifikasi role dosen).
+- **FIXED 2026-10-06 (keputusan: mahasiswa juga boleh pin):** `PinnedMessageController::store`
+  tak lagi menolak non-moderator (konsisten dengan `destroy` yang tak pernah membatasi role);
+  UI `canPin` dibuka untuk semua role, sementara **hapus pesan orang lain tetap moderator**
+  (prop baru `canDeleteOthers` → `showDelete = isOwn || canDeleteOthers`).
+  **Terverifikasi live:** API pin sebagai mahasiswa `403 → 200`; klik koordinat asli menu
+  "Sematkan pesan" → toast + `POST .../pin` → row `pinned_messages` id=2
+  `pinned_by=9b9e224b…` (Andi); "Lepas sematan" → `DELETE .../pin` + toast. Console bersih.
 
 ### ℹ️ F8 — Reopen sesi dimatikan by design (BR-023) — panduan sudah disesuaikan.
 ### ℹ️ F9 — Cakupan panduan vs aplikasi: masih ada permukaan tak tercakup: pencarian chat (`Buka pencarian` + `SearchResults`), halaman kehadiran mahasiswa (`student/courses/attendance`),6 halaman analytics dosen, tab Notification/Appearance settings, alur lupa/reset password.

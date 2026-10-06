@@ -199,6 +199,20 @@ ruang chat sesi tertutup). Laporan: `docs/reports/audits/E2E_FLOW_TEST_2026-10-0
   di tab Attendance; terverifikasi tampil.
 - **Regresi penuh setelah deploy: 42 PASS / 0 FAIL / 1 SKIP**; core-api 602 passed/0 failed;
   client-app tsc & vitest = baseline identik (bukan regresi).
+- **F3 DITUTUP (tidak repro lagi)** — klik nyata via programatis DAN koordinat asli
+  (`Input.dispatchMouseEvent`) sukses: `PATCH .../edit` + `DELETE .../{id}` keluar, toast OK,
+  persist Mongo (`editedAt`/`version`/`deletedAt`), console bersih. Handler identik dgn
+  versi 4 Okt (`b9be6a1`); bundle berubah karena deploy `503c400`. Bukti:
+  `e2e_flows/f3_repro.js`, `f3_trusted.js`.
+- **F6 DIPERBAIKI (mahasiswa kini boleh pin)** — `PinnedMessageController::store` buang gate
+  moderator; UI `canPin` untuk semua role + prop baru `canDeleteOthers` (hapus pesan orang
+  lain tetap moderator/dosen). Live: pin mahasiswa `403→200`, klik "Sematkan pesan" → toast +
+  `POST .../pin` → row `pinned_messages` (pinned_by=Andi); unpin via `DELETE .../pin`.
+- **Chat @ai diau ulang pasca-deploy: OK** — sesi baru → pre-read → goal → pesan biasa →
+  `@ai` dibalas **7.5 dtk / 1537 karakter** (jujur "tidak ada dokumen materi" utk IF203,
+  tanpa fallback error); sesi ditutup, ringkasan otomatis sesuai isi percakapan.
+- Residu batch ini: sesi "Tes Chat AI …" (ditutup, ada ringkasan) + sesi E2E ke-N; 2 row
+  `pinned_messages` (id1 sudah di-unpin via UI, id2 masih tersemat).
 - Harness notes: `my-group` kosong = `200 {data:null}`; goal harus selaras materi minggu
   (validator bisa 2 ronde); login rate-limit 429 perlu backoff; kelas `min_members=2`
   menolak leave (by design).
