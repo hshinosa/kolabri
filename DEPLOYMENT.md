@@ -13,20 +13,26 @@ Panduan lengkap untuk deploy Kolabri ke VPS production environment.
 
 ### Software Requirements
 ```bash
-# Install Docker
+# Install Docker Engine + Compose v2 plugin (compose v2 ships with Docker CE,
+# no separate docker-compose binary needed)
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
+
+# Optional: let your user run docker without sudo
 sudo usermod -aG docker $USER
+newgrp docker
 
-# Install Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-
-# Verify installation
+# Verify
 docker --version
-docker-compose --version
+docker compose version      # -> Docker Compose version v2.x
+```
 
-# Log out and log back in to apply docker group changes
+> `deploy.sh` accepts either `docker compose` (v2 plugin, recommended) or the
+> legacy `docker-compose` (v1) binary — whichever is found first.
+
+Quick validation before you spend time building:
+```bash
+./deploy.sh --check         # creates .env files, validates compose config, no build
 ```
 
 ## 🚀 Initial Deployment
@@ -42,8 +48,8 @@ cd kolabri
 
 #### AI Engine
 ```bash
-cp Kolibri-ai-engine/.env.production.example Kolibri-ai-engine/.env.production
-nano Kolibri-ai-engine/.env.production
+cp Kolabri-ai-engine/.env.production.example Kolabri-ai-engine/.env.production
+nano Kolabri-ai-engine/.env.production
 ```
 
 **Important settings:**
@@ -54,8 +60,8 @@ nano Kolibri-ai-engine/.env.production
 
 #### Core API
 ```bash
-cp Kolibri-core-api/.env.production.example Kolibri-core-api/.env.production
-nano Kolibri-core-api/.env.production
+cp Kolabri-core-api/.env.production.example Kolabri-core-api/.env.production
+nano Kolabri-core-api/.env.production
 ```
 
 **Important settings:**
@@ -65,8 +71,8 @@ nano Kolibri-core-api/.env.production
 
 #### Client App
 ```bash
-cp Kolibri-client-app/.env.production.example Kolibri-client-app/.env.production
-nano Kolibri-client-app/.env.production
+cp Kolabri-client-app/.env.production.example Kolabri-client-app/.env.production
+nano Kolabri-client-app/.env.production
 ```
 
 **Important settings:**
@@ -95,18 +101,32 @@ openssl rand -base64 32
 
 ### 4. Run Deployment Script
 ```bash
-./deploy.sh
+./deploy.sh --check   # optional: validate compose config first, no build
+./deploy.sh           # full deploy
 ```
 
 Script akan:
-1. Check prerequisites
-2. Create necessary directories
-3. Verify environment files
+1. Check prerequisites (`docker` + `docker compose` v2, atau `docker-compose` v1)
+2. Create directories **+ generate self-signed TLS pair** (nginx butuh file cert untuk `listen 443`)
+3. Create `.env.production` + root `.env` dari example kalau belum ada
 4. Build Docker images
-5. Start all services
-6. Run database migrations
-7. Generate Laravel APP_KEY
-8. Optimize Laravel for production
+5. Start services (nginx profile aktif otomatis → `:80`/`:443` terbuka)
+6. Wait sampai healthcheck selesai (bukan `sleep` tetap)
+7. Optimize Laravel
+8. Generate `APP_KEY` kalau masih placeholder
+
+Flag:
+| Flag | Fungsi |
+|---|---|
+| `--check` | validasi config saja, tanpa build/start |
+| `--yes` / `-y` | non-interaktif (CI/agent) — tidak pernah menunggu input |
+| `--no-cache` | rebuild bersih semua image |
+| `--no-nginx` | lewati profile nginx |
+| `--status` | tampilkan status service saja |
+
+> ⚠️ `client-app` dan `core-api` **tidak mem-publish port host** di compose production —
+> akses lewat nginx (`:80`/`:443`). Pakai `--no-nginx` hanya kalau kamu memang mau
+> mem-publish port aplikasi sendiri.
 
 ## 🔒 SSL Configuration (Recommended)
 
@@ -118,7 +138,7 @@ sudo apt update
 sudo apt install certbot
 
 # Stop nginx temporarily
-docker-compose -f docker-compose.production.yml stop nginx
+docker compose -f docker-compose.production.yml stop nginx
 
 # Get certificate
 sudo certbot certonly --standalone -d your-domain.com -d www.your-domain.com
@@ -157,7 +177,7 @@ server {
 
 ```bash
 # Restart nginx
-docker-compose -f docker-compose.production.yml restart nginx
+docker compose -f docker-compose.production.yml restart nginx
 ```
 
 ### Option 2: Auto-renewal dengan Certbot
@@ -167,13 +187,13 @@ docker-compose -f docker-compose.production.yml restart nginx
 cat > /opt/kolabri/renew-ssl.sh << 'EOF'
 #!/bin/bash
 cd /opt/kolabri
-docker-compose -f docker-compose.production.yml stop nginx
+docker compose -f docker-compose.production.yml stop nginx
 certbot renew
 cp /etc/letsencrypt/live/your-domain.com/fullchain.pem nginx/ssl/
 cp /etc/letsencrypt/live/your-domain.com/privkey.pem nginx/ssl/
 chown -R $USER:$USER nginx/ssl/
 chmod 600 nginx/ssl/privkey.pem
-docker-compose -f docker-compose.production.yml start nginx
+docker compose -f docker-compose.production.yml start nginx
 EOF
 
 chmod +x /opt/kolabri/renew-ssl.sh
@@ -188,27 +208,27 @@ crontab -e
 ### View Logs
 ```bash
 # All services
-docker-compose -f docker-compose.production.yml logs -f
+docker compose -f docker-compose.production.yml logs -f
 
 # Specific service
-docker-compose -f docker-compose.production.yml logs -f ai-engine
-docker-compose -f docker-compose.production.yml logs -f core-api
-docker-compose -f docker-compose.production.yml logs -f client-app
-docker-compose -f docker-compose.production.yml logs -f nginx
+docker compose -f docker-compose.production.yml logs -f ai-engine
+docker compose -f docker-compose.production.yml logs -f core-api
+docker compose -f docker-compose.production.yml logs -f client-app
+docker compose -f docker-compose.production.yml logs -f nginx
 ```
 
 ### Check Service Status
 ```bash
-docker-compose -f docker-compose.production.yml ps
+docker compose -f docker-compose.production.yml ps
 ```
 
 ### Restart Services
 ```bash
 # Restart all
-docker-compose -f docker-compose.production.yml restart
+docker compose -f docker-compose.production.yml restart
 
 # Restart specific service
-docker-compose -f docker-compose.production.yml restart ai-engine
+docker compose -f docker-compose.production.yml restart ai-engine
 ```
 
 ### Update Application
@@ -219,7 +239,7 @@ cd /opt/kolabri
 git pull origin main
 
 # Rebuild and restart
-docker-compose -f docker-compose.production.yml up -d --build
+docker compose -f docker-compose.production.yml up -d --build
 
 # Run migrations if needed
 docker exec kolabri-core-api npx prisma migrate deploy
@@ -255,7 +275,7 @@ docker exec kolabri-mongodb mongorestore /backup/mongo-backup
 
 **Check logs:**
 ```bash
-docker-compose -f docker-compose.production.yml logs --tail=100
+docker compose -f docker-compose.production.yml logs --tail=100
 ```
 
 **Common issues:**
@@ -280,17 +300,17 @@ chmod -R 755 .
 3. **Database connection failed**
 ```bash
 # Check if database is healthy
-docker-compose -f docker-compose.production.yml ps postgres mongodb
+docker compose -f docker-compose.production.yml ps postgres mongodb
 
 # Restart database
-docker-compose -f docker-compose.production.yml restart postgres mongodb
+docker compose -f docker-compose.production.yml restart postgres mongodb
 ```
 
 ### 502 Bad Gateway
 
 **Check if services are running:**
 ```bash
-docker-compose -f docker-compose.production.yml ps
+docker compose -f docker-compose.production.yml ps
 ```
 
 **Check nginx logs:**
@@ -300,7 +320,7 @@ docker logs kolabri-nginx
 
 **Restart services:**
 ```bash
-docker-compose -f docker-compose.production.yml restart
+docker compose -f docker-compose.production.yml restart
 ```
 
 ### Out of Memory
@@ -341,8 +361,8 @@ sudo ufw status
 sudo apt update && sudo apt upgrade -y
 
 # Update Docker images
-docker-compose -f docker-compose.production.yml pull
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker-compose.production.yml pull
+docker compose -f docker-compose.production.yml up -d
 ```
 
 ### 3. Backup Strategy
@@ -393,7 +413,7 @@ db.stats()
 
 ## 🎯 Post-Deployment Checklist
 
-- [ ] Verify all services are running (`docker-compose ps`)
+- [ ] Verify all services are running (`docker compose ps`)
 - [ ] Test application functionality
 - [ ] Configure SSL certificate
 - [ ] Update domain DNS
@@ -407,9 +427,9 @@ db.stats()
 ## 📞 Support
 
 Untuk bantuan lebih lanjut:
-- Check logs: `docker-compose -f docker-compose.production.yml logs -f`
+- Check logs: `docker compose -f docker-compose.production.yml logs -f`
 - Review documentation in `/docs` folder
-- Check service health: `docker-compose -f docker-compose.production.yml ps`
+- Check service health: `docker compose -f docker-compose.production.yml ps`
 
 ## 🔄 Rollback Procedure
 
@@ -417,7 +437,7 @@ Jika deployment gagal:
 
 ```bash
 # Stop current deployment
-docker-compose -f docker-compose.production.yml down
+docker compose -f docker-compose.production.yml down
 
 # Restore from backup
 cat backup-latest.sql | docker exec -i kolabri-postgres psql -U postgres -d kolabri-db
@@ -426,7 +446,7 @@ cat backup-latest.sql | docker exec -i kolabri-postgres psql -U postgres -d kola
 git checkout <previous-tag>
 
 # Rebuild and start
-docker-compose -f docker-compose.production.yml up -d --build
+docker compose -f docker-compose.production.yml up -d --build
 ```
 
 ---

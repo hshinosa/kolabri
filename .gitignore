@@ -42,7 +42,6 @@ benchmark-results*.json
 
 # Local one-off helper scripts
 backup.sh
-deploy.sh
 convert_to_docx.py
 ingest_script.py
 

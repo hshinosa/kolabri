@@ -29,22 +29,22 @@ echo "MONGO_USERNAME=admin" >> .env
 
 # Copy environment templates
 cp Kolabri-ai-engine/.env.production.example Kolabri-ai-engine/.env.production
-cp Kolibri-core-api/.env.production.example Kolibri-core-api/.env.production
-cp Kolibri-client-app/.env.production.example Kolibri-client-app/.env.production
+cp Kolabri-core-api/.env.production.example Kolabri-core-api/.env.production
+cp Kolabri-client-app/.env.production.example Kolabri-client-app/.env.production
 ```
 
 ### 3. Edit Critical Config
 ```bash
 # Edit AI Engine config
-nano Kolibri-ai-engine/.env.production
+nano Kolabri-ai-engine/.env.production
 # Set: OPENAI_API_KEY, OPENAI_BASE_URL, OPENAI_MODEL
 
 # Edit Core API config
-nano Kolibri-core-api/.env.production
+nano Kolabri-core-api/.env.production
 # Set: JWT_SECRET (random 32+ chars), CLIENT_URL (your domain)
 
 # Edit Client App config
-nano Kolibri-client-app/.env.production
+nano Kolabri-client-app/.env.production
 # Set: APP_URL (your domain)
 ```
 
@@ -57,7 +57,7 @@ nano Kolibri-client-app/.env.production
 ```bash
 nano nginx/conf.d/default.conf
 # Ganti: your-domain.com dengan domain kamu
-docker-compose -f docker-compose.production.yml restart nginx
+docker compose -f docker-compose.production.yml restart nginx
 ```
 
 **Selesai!** Buka http://your-domain.com
@@ -68,7 +68,7 @@ docker-compose -f docker-compose.production.yml restart nginx
 
 ```bash
 # Stop nginx
-docker-compose -f docker-compose.production.yml stop nginx
+docker compose -f docker-compose.production.yml stop nginx
 
 # Get SSL certificate
 sudo apt install certbot -y
@@ -86,7 +86,7 @@ nano nginx/conf.d/default.conf
 # Uncomment HTTPS server block
 
 # Restart nginx
-docker-compose -f docker-compose.production.yml start nginx
+docker compose -f docker-compose.production.yml start nginx
 ```
 
 ---
@@ -95,22 +95,22 @@ docker-compose -f docker-compose.production.yml start nginx
 
 ```bash
 # View logs
-docker-compose -f docker-compose.production.yml logs -f
+docker compose -f docker-compose.production.yml logs -f
 
 # Restart all services
-docker-compose -f docker-compose.production.yml restart
+docker compose -f docker-compose.production.yml restart
 
 # Stop all services
-docker-compose -f docker-compose.production.yml down
+docker compose -f docker-compose.production.yml down
 
 # Start all services
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker-compose.production.yml up -d
 
 # Rebuild after code changes
-docker-compose -f docker-compose.production.yml up -d --build
+docker compose -f docker-compose.production.yml up -d --build
 
 # Check service status
-docker-compose -f docker-compose.production.yml ps
+docker compose -f docker-compose.production.yml ps
 
 # Shell into container
 docker exec -it kolabri-client-app bash
@@ -141,19 +141,19 @@ docker exec kolabri-client-app php artisan migrate --force
 ### Service won't start
 ```bash
 # Check logs
-docker-compose -f docker-compose.production.yml logs <service-name>
+docker compose -f docker-compose.production.yml logs <service-name>
 
 # Restart specific service
-docker-compose -f docker-compose.production.yml restart <service-name>
+docker compose -f docker-compose.production.yml restart <service-name>
 ```
 
 ### 502 Bad Gateway
 ```bash
 # Check if backend services are running
-docker-compose -f docker-compose.production.yml ps
+docker compose -f docker-compose.production.yml ps
 
 # Restart all
-docker-compose -f docker-compose.production.yml restart
+docker compose -f docker-compose.production.yml restart
 ```
 
 ### Port already in use
@@ -192,7 +192,7 @@ cd /opt/kolabri
 git pull origin main
 
 # Rebuild and restart
-docker-compose -f docker-compose.production.yml up -d --build
+docker compose -f docker-compose.production.yml up -d --build
 
 # Run migrations if needed
 docker exec kolabri-core-api npx prisma migrate deploy
