@@ -179,6 +179,26 @@ regresi batch ini.
   selalu cek dengan `sudo nginx -T`.
 - vpsgw juga punya salinan nginx untuk `kolabri.web.id` yang **502** — produksi diservis sumo1.
 
+## Batch 2026-10-06 — E2E seluruh flow (live) ✅ 42 PASS / 0 FAIL / 1 SKIP
+
+Suite `e2e_flows/flows.js` (di mesin ini, tunnel SSH ke sumo1:13000) terhadap produksi:
+mahasiswa (kelas/kelompok/sesi diskusi → pre-read → goal validator → chat/edit/hapus/@ai →
+tutup → ringkasan → refleksi), dosen (analisis sesi, analytics, kehadiran), admin.
+Verifikasi bukti: Postgres (session/goal/reflection/auto-attendance), Mongo
+(`editedAt`/`deletedAt`), render UI headless Chrome (tab Attendance dosen, halaman analitik,
+ruang chat sesi tertutup). Laporan: `docs/reports/audits/E2E_FLOW_TEST_2026-10-06.md` (commit `b917f52`).
+
+- **F4 akar diketahui** — `room.tsx:662` `isSummaryVisible` default `false`, hanya di-set true
+  saat tutup sesi (baris 579); muat ulang = 0 GET `/summary` (API 200/743 chr). Fix 1 baris.
+- **F10 baru** — `GET /api/analytics/session-discussion/:id` (qualityScore/rekomendasi/timeline)
+  dan ringkasan sesi **tidak punya permukaan UI dosen**; `DiscussionHealthWidget` tak pernah di-import.
+- **F11 baru** — auto-attendance: `present = ≥3 pesan AND ≥1 HOT`; sesi pendek → `absent` (by design).
+- Harness notes: `my-group` kosong = `200 {data:null}`; goal harus selaras materi minggu
+  (validator bisa 2 ronde); login rate-limit 429 perlu backoff; kelas `min_members=2`
+  menolak leave (by design).
+- Residu: 3 sesi "E2E Analisis Dosen 1" (lengkap) di Kelompok A/IF203, grup
+  "Kelompok Uji E2E" IF206 (`K9M26S93`), 1 enrollment Dewi di IF203; sesi gagal run awal sudah soft-delete.
+
 ## Open items (not started)
 
 1. **CI**: core `ci.yml` runs `test:run` WITHOUT postgres →161 DB tests skip on GitHub; wiring service postgres now safe (proven green with live DB)
