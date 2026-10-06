@@ -155,7 +155,7 @@ Hasil akhir: **s2a 13/13 · s2b2 9/9 · s2c 13/13 · s2d 3/3 PASS**.
 Terdiscovery & diperbaiki:
 - **M1 (fix): `PUT /api/users/me` selalu 404** — core-api tidak punya endpoint itu sama sekali dan router user cuma di-mount di `/api/admin/users`. Edit profil (nama/email) dari UI mahasiswa tidak pernah bisa. Fix: tambah route `PUT /me` (semua role) + mount `/api/users` (endpoint admin tetap 403 untuk non-admin, terverifikasi).
 - **M2 (fix): grup soft-delete masih bisa di-join** — `joinGroupByCode`/`inviteMembers`/`getGroupById` tidak memfilter `deletedAt`. Terbukti live: Fajar berhasil join grup yang sudah dihapus (baris `group_members` tercipta). Fix: guard `deletedAt: null` di 3 service; verifikasi: kode grup terhapus → 404 `Invalid join code`.
-- **M3 (open): `PATCH /student/groups/{g}/members/{m}` (ubah role) → 404** — route client-app ada tapi core-api tak punya endpoint, skema `group_members` tanpa kolom role, dan UI tak punya tombol apa pun (dead feature). Perlu keputusan: implement (role + UI) atau buang route-nya.
+- **M3 (RESOLVED — dibuang): `PATCH /student/groups/{g}/members/{m}` (ubah role) →** keputusan: sistem hanya punya **ketua (createdBy) ↔ anggota**, jadi role admin di tengah anggota redundan. Route + method `updateRole` dihapus; `PATCH` ke path itu kini **405** (method hanya DELETE untuk keluarkan anggota). Regresi s2b2 (invite/keluar-kan/leave) tetap **9/9 PASS**.
 - Bukan bug: avatar <100x100 ditolak (validasi by design); BFF form-error selalu 302 (uji harus assert state, bukan status).
 
 ### Dosen — 18+11+21 tes (batch L1/L2/L3), semua lulus setelah fix
