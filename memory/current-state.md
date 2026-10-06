@@ -117,6 +117,12 @@ bersih / RAM bebas untuk uji end-to-end.
 (fallback `AI_ENGINE_SECRET`), core-api→ai-engine pakai `AI_ENGINE_SECRET` divalidasi sbg
 `CORE_API_SECRET`; `verifyInternalSecret` menerima `X-Internal-Secret` ATAU `Authorization: Bearer`.
 
+**Akses GitHub dari vpsgw — aktif (2026-10-06):** key `root@personal`
+(`SHA256:I4xcJX5s…L9A9rZw`) terdaftar di akun `hshinosa` (key ID `165511503`, title
+`vpsgw (root@personal) — kolabri deploy`); remote root + 3 submodule sudah SSH
+(`git@github.com:hshinosa/…`); `ssh -T git@github.com` → `Hi hshinosa!`; push dry-run OK.
+Token `gh` di laptop kini punya scope `admin:public_key` (di-refresh untuk mendaftarkan key itu).
+
 ## Open items (not started)
 
 1. **CI**: core `ci.yml` runs `test:run` WITHOUT postgres →161 DB tests skip on GitHub; wiring service postgres now safe (proven green with live DB)
