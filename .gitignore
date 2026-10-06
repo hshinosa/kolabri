@@ -68,3 +68,7 @@ tests/
 
 # Never commit TLS material
 nginx/ssl/
+
+# Kredensial handoff — jangan pernah masuk git (repo ini PUBLIC)
+*kolabri-credentials*.zip
+*credentials*.zip
