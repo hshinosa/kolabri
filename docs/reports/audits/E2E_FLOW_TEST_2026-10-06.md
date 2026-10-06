@@ -123,9 +123,26 @@ Mongo chatlogs (sesi tsb)   : 5 dokumen — edit (editedAt/version=1), hapus (de
 - 1 enrollment Dewi di IF203 (uji gabung kelas).
 - Sekitar 15 dokumen `chatlogs` uji di Mongo.
 
-## 7. Rekomendasi
+## 7. Rekomendasi → SEMUA DIKERJAKAN (batch kedua, 2026-10-06)
 
-1. **Fix F4** (1 baris): init `isSummaryVisible` dari `sessionDiscussion.isClosed`.
-2. **Wire F10**: tampilkan ringkasan + analisis per-sesi di UI dosen (endpoint sudah siap),
-   dan hidupkan/hapus `DiscussionHealthWidget`.
-3. Komunikasikan ambang kehadiran otomatis (F11) di panduan dosen.
+1. ✅ **F4 DIPERBAIKI** — `room.tsx` init `isSummaryVisible` dari `sessionDiscussion.isClosed`.
+   **Verifikasi live:** instrumentasi jaringan CDP pada muat ulang ruang chat sesi tertutup kini
+   menghasilkan `GET .../summary → 200` (sebelumnya 0), dan kartu **"Ringkasan Diskusi"** tampil
+   di DOM hasil render React.
+2. ✅ **F10 DIPERBAIKI** — tab baru **"Sesi & Analisis"** di halaman kelas dosen:
+   - core-api: `GET /api/courses/:id/sessions` (lecturer-only, cek pemilik kelas) —
+     daftar sesi + grup/minggu/tujuan/keadaan ringkasan/refleksi.
+   - client-app: proxy `GET /lecturer/courses/{c}/sessions` dan
+     `.../sessions/{sd}/detail` (gabung analisis + ringkasan) — `LecturerSessionInsightController`.
+   - UI: `SessionsTab.tsx` — daftar sesi, ekspansi per sesi menampilkan **Tujuan, Ringkasan AI
+     penuh, skor kualitas + rekomendasi, metrik, kontribusi per mahasiswa**; **`DiscussionHealthWidget`
+     kini dirender** (sebelumnya komponen mati).
+   **Verifikasi live (headless Chrome, akun Budi):** daftar berisi sesi uji; ekspansi menampilkan
+   ringkasan 873 karakter + "Kualitas Diskusi 60/100 · Cukup" + rekomendasi lengkap + metrik
+   (total pesan 4, @ai 1, refleksi 1, anggota 3) + kontribusi Andi (2 pesan, rata-rata 44 karakter).
+3. ✅ **F11 DIPERBAIKI** — legenda aturan kehadiran otomatis di tab Attendance
+   ("hadir = ≥3 pesan & ≥1 HOT… koreksi manual via Lihat Detail"), terverifikasi tampil di DOM.
+
+**Regresi setelah deploy (suite yang sama): 42 PASS · 0 FAIL · 1 SKIP** — tidak ada alur yang rusak.
+Build: core-api `tsc` bersih + **602 passed / 0 failed**; client-app `tsc` = 27 error baseline
+(`@/routes/*` wayfinder) dan vitest 3 file gagal = baseline identik (bukan regresi).

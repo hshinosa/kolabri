@@ -188,11 +188,17 @@ Verifikasi bukti: Postgres (session/goal/reflection/auto-attendance), Mongo
 (`editedAt`/`deletedAt`), render UI headless Chrome (tab Attendance dosen, halaman analitik,
 ruang chat sesi tertutup). Laporan: `docs/reports/audits/E2E_FLOW_TEST_2026-10-06.md` (commit `b917f52`).
 
-- **F4 akar diketahui** — `room.tsx:662` `isSummaryVisible` default `false`, hanya di-set true
-  saat tutup sesi (baris 579); muat ulang = 0 GET `/summary` (API 200/743 chr). Fix 1 baris.
-- **F10 baru** — `GET /api/analytics/session-discussion/:id` (qualityScore/rekomendasi/timeline)
-  dan ringkasan sesi **tidak punya permukaan UI dosen**; `DiscussionHealthWidget` tak pernah di-import.
-- **F11 baru** — auto-attendance: `present = ≥3 pesan AND ≥1 HOT`; sesi pendek → `absent` (by design).
+- **F4 DIPERBAIKI** — `room.tsx` `isSummaryVisible` kini init dari `sessionDiscussion.isClosed`;
+  terverifikasi live: reload sesi tertutup → `GET .../summary → 200` + kartu "Ringkasan Diskusi" tampil.
+- **F10 DIPERBAIKI** — tab **"Sesi & Analisis"** di halaman kelas dosen: core-api
+  `GET /api/courses/:id/sessions` (lecturer-only) + proxy client-app
+  `LecturerSessionInsightController` (`/lecturer/courses/{c}/sessions[/detail]`) + `SessionsTab.tsx`
+  (tujuan, ringkasan AI, skor kualitas+rekomendasi, metrik, kontribusi) + `DiscussionHealthWidget`
+  kini dirender. Terverifikasi render nyata di browser.
+- **F11 DIPERBAIKI** — legenda aturan kehadiran otomatis (`present = ≥3 pesan AND ≥1 HOT`)
+  di tab Attendance; terverifikasi tampil.
+- **Regresi penuh setelah deploy: 42 PASS / 0 FAIL / 1 SKIP**; core-api 602 passed/0 failed;
+  client-app tsc & vitest = baseline identik (bukan regresi).
 - Harness notes: `my-group` kosong = `200 {data:null}`; goal harus selaras materi minggu
   (validator bisa 2 ronde); login rate-limit 429 perlu backoff; kelas `min_members=2`
   menolak leave (by design).

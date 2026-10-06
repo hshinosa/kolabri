@@ -104,13 +104,15 @@ Commit: `Kolabri-client-app@a74fa05`, pointer root `ac30a03`.
 - Bundle `MessageEditor`/`room` di produksi = source (dicek byte-level handler-nya identik).
 - **Belum terpecahkan:** apakah `messages.find()` di `handleSaveEdit` gagal (array vs list render) atau hal lain — **butuh1 verifikasi manual di browser nyata** (apakah muncul error toast/permintaan jaringan saat klik Simpan). Kombinasi dengan F1: walau UI mengirim, server tetap500.
 
-### 📌 F4 — Ringkasan tidak tampil setelah reload (sudah diketahui)
+### ✅ F4 — Ringkasan tidak tampil setelah reload (DIPERBAIKI 2026-10-06)
 > **UPDATE 2026-10-06 (E2E ulang):** masih terbukti buka — instrumentasi jaringan CDP pada
 > muat ulang ruang chat sesi tertutup = **0 GET `/summary`** (API-nya sendiri `200`, 743 karakter).
 > **Akar:** `resources/js/pages/student/chat/room.tsx:662` `isSummaryVisible` default `false`
 > dan hanya di-set `true` di baris 579 (alur tutup sesi dalam halaman yang sama);
 > `useChatSummary` (baris 750) memakai `enabled: isSummaryVisible`. Fix: init dari
 > `sessionDiscussion.isClosed`. Rincian: `docs/reports/audits/E2E_FLOW_TEST_2026-10-06.md`.
+> **FIXED & terverifikasi live 2026-10-06:** `useState(!!sessionDiscussion.isClosed)` — reload
+> kini memanggil `GET .../summary → 200` dan kartu "Ringkasan Diskusi" tampil.
 - Ringkasan tersimpan di DB (`summary_generated_at` + isi1491–1420 karakter) tapi halaman segar tidak mem-fetch (0 GET summary) — render hanya pada alur live pasca-tutup. Workaround terdokumentasi di panduan.
 
 ### 📌 F5 — Sitasi RAG mati di produksi
