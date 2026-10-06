@@ -91,6 +91,14 @@ Commit: `Kolabri-client-app@a74fa05`, pointer root `ac30a03`.
 | Edit oleh non-anggota | 500 | **403** |
 | Log client-app | 500 berulang | **0 error** |
 
+> **UPDATE 2026-10-06:** penyebab tambahan ditemukan & diperbaiki — edit/hapus memang **tidak
+> pernah tersimpan** ke store pesan (MongoDB `chatlogs`): listener `edit_message` tidak ada di
+> core-api, dan `delete_message` dikirim dengan `sessionDiscussionId` sedangkan skema minta
+> `roomId` → zod reject. Row `chat_message_audit` tetap terisi sehingga API terlihat `200`.
+> Fix: `Kolabri-core-api@4b93a1a` + `Kolabri-client-app@503c400`, ter-deploy & terbukti live
+> (`deletedAt`/`editedAt`/`version` kini terisi; sebelumnya **0 dari 1307** dokumen punya
+> `deletedAt`). F3 di bawah (klik tak menghasilkan request) **masih terbuka** — sisa murni klien.
+
 ### ⚠️ F3 — Klik "Simpan edit"/"Hapus pesan" tidak menghasilkan request keluar browser (terinstrumentasi)
 - XHR/fetch di-patch: **0 request** setelah klik, baik di pesan baru maupun pesan lama hasil muat server; state editor benar (nilai terisi, tombol enabled); jalur keyboard Enter pun nihil.
 - Bundle `MessageEditor`/`room` di produksi = source (dicek byte-level handler-nya identik).

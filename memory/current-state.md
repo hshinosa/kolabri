@@ -123,6 +123,62 @@ bersih / RAM bebas untuk uji end-to-end.
 (`git@github.com:hshinosa/…`); `ssh -T git@github.com` → `Hi hshinosa!`; push dry-run OK.
 Token `gh` di laptop kini punya scope `admin:public_key` (di-refresh untuk mendaftarkan key itu).
 
+## Batch 2026-10-06 — persistensi edit/hapus pesan (socket) ✅ selesai
+
+**Akar masalah (ditemukan dari query DB, bukan dari kode):** edit & hapus pesan "sukses" di UI
+(REST `200` + row `chat_message_audit`) tapi **tidak pernah sampai ke store pesan asli**.
+
+- Store pesan live = **MongoDB `kolabri.chatlogs`** (`_id` ObjectId24-hex). Postgres
+  `chat_messages` (UUID, Prisma `ChatMessage`) hanya berisi seed 2026-09-22…28 — **bukan data live**.
+- `chat_message_audit.message_id` merujuk ObjectId Mongo, jadi audit ≠ persistensi.
+- **Bukti sebelum fix:** `WITH_DELETED_AT: 0` dari **1307** dokumen;3 pesan yang di-audit
+  2026-10-04 (`6ac228ba…`, `6ac22a52…`, `6ac242d1…`) masih `content` asli, `version: 0`, `deletedAt: null`.
+
+**Bug 1 — edit tak pernah tersimpan.** Klien `useSocketRoom` meng-emit `edit_message`, tapi
+core-api **tidak punya listener sama sekali** → drop senyap. REST `MessageController::edit` hanya
+`ChatMessageAudit::create` (Postgres), tak pernah menyentuh Mongo.
+**Bug 2 — hapus tak pernah tersimpan.** Klien kirim `{messageId, sessionDiscussionId}`;
+`deleteMessageSchema` minta **`roomId`** → zod reject → handler berhenti sebelum
+`message.deletedAt = new Date()`.
+
+**Fix (push):**
+- `Kolabri-core-api@4b93a1a` — listener `registerEditMessage` (rate limit `edit_message`,
+  validasi zod, cek room membership, owner-only, jendela24 jam sama dgn REST), skema
+  `editMessageSchema`, `deleteMessageSchema` menerima `roomId` **atau** `sessionDiscussionId`
+  (+ helper `resolveRoomId`), field `editedAt` di `ChatLog` + `ChatHistoryItem`, dan `editedAt`
+  ikut di payload `chat_history` / `chat_history_page` (badge "diedit" selamat reload).
+  `edit_message` ditambahkan ke `EVENT_LIMITS` (20/60s).
+- `Kolabri-client-app@503c400` — kirim `roomId` di `edit_message` **dan** `delete_message`
+  (keduanya tetap membawa `sessionDiscussionId`), buang argumen `oldContent` yang tak terpakai,
+  map socket `editedAt` → display `edited_at`.
+- Umbrella `6d33973` — bump kedua pointer.
+
+**Deploy sumo1:** rsync `src/` + `resources/js/` (drift = **0 file** selain yang diubah),
+backup lama di `/opt/kolabri/backups/pre-f3-persist-20261006-084219.tar`, rebuild
+`core-api` + `client-app`, semua container healthy. Bundle produksi terverifikasi memuat
+`edit_message",{…roomId:t,sessionDiscussionId:t}` dan `delete_message",{…roomId:t,…}`.
+
+**Verifikasi live (E2E socket, JWT student Andi, tunnel ke core-api `:13000`):**
+join room → kirim pesan → `edit_message` → `message_edited` → `delete_message` dengan **payload
+lawas hanya `sessionDiscussionId`** → `message_deleted`. Hasil Mongo untuk
+`6ac4bc1713838048f1f2de6c`: `content` = "[E2E] konten setelah edit", `editedAt` =
+`2026-10-06T09:15:04.095Z`, `version: 1`, `deletedAt` = `2026-10-06T09:15:04.130Z` —
+`TOTAL_DELETED_SET: 1` dan `TOTAL_EDITS_SET: 1` (dari nol sebelumnya).
+
+**Uji regresi:** core-api `npm run build` bersih + `602 passed / 0 failed`.
+client-app `tsc --noEmit` =27 error semuanya `@/routes/*` (wayfinder belum digenerate, pre-existing)
+dan `vitest`3 file gagal — **sama persis saat working tree dibersihkan** (`git stash`), jadi bukan
+regresi batch ini.
+
+**Catatan operasional:**
+- Semua52 `session_discussions` berstatus **closed**; untuk uji, sesi
+  `31605650-eeba-4292-974a-8bca4e743c8b` dibuka sementara lalu **`closed_at` dikembalikan persis**
+  `2026-10-04 09:19:25.13`.
+- **nginx sumo1 ada dua file**: `sites-enabled/kolabri.web.id` (yang di-load, memuat fix route
+  DELETE) ≠ `sites-available/kolabri.web.id` (stale, tanpa fix). Ubah yang `sites-enabled`,
+  selalu cek dengan `sudo nginx -T`.
+- vpsgw juga punya salinan nginx untuk `kolabri.web.id` yang **502** — produksi diservis sumo1.
+
 ## Open items (not started)
 
 1. **CI**: core `ci.yml` runs `test:run` WITHOUT postgres →161 DB tests skip on GitHub; wiring service postgres now safe (proven green with live DB)
@@ -130,3 +186,9 @@ Token `gh` di laptop kini punya scope `admin:public_key` (di-refresh untuk menda
 3. **Dead module**: `providerResolution.service.ts` + its unit test —0 production callers since `de64e41`; cleanup candidate (also leftover test-file refs)
 4. Engine nits: `/metrics` Prometheus endpoint (metrics are log-based now), `enable_semantic_cache` flag, `B008`×2 in `documents.py`
 5. `prompt_cache_hit_tokens` never appears with sumopod (provider doesn't return it) — auto-valuable if provider moves to DeepSeek/OpenAI
+6. **F3 masih terbuka** — klik "Simpan edit"/"Hapus pesan" di UI tidak menghasilkan request
+   (audit 2026-10-04: 0 panggilan `window.confirm` / `Array.prototype.find` / XHR). Backend kini
+   sudah benar, jadi sisa murni di klien. Petunjuk statis: `handleDelete` (`room.tsx` baris ~1638)
+   **tidak punya guard sebelum** `messages.find()` — kalau handler keburu jalan, `find` wajib
+   tercatat; karenanya kemungkinan klik tak sampai ke handler. Perlu repro di browser nyata
+   (klik + Network tab).
