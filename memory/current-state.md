@@ -245,3 +245,11 @@ ruang chat sesi tertutup). Laporan: `docs/reports/audits/E2E_FLOW_TEST_2026-10-0
 - Backfill: 1250 pesan lama terklasifikasi (P1023/R221/F6) — total 1276 event SRL di activity_logs.
 - Bonus fix: `StudentCourseController::closeSession` BFF timeout 10s→30s (ringkasan LLM bisa >10s; sebelumnya close sukses tapi klien 500).
 **Bukti live:** sesi uji 3b6e4250 →3 pesan biasa terklasifikasi forethought .92 / performance .95 / reflection .87; group analytics total 38 (F1/P34/R3, avg 79%); course total 96; UI kelompok & sesi tampil nyata; ekspor CSV berkolom SRL.
+
+
+## 2026-10-06 · Batch 3: cakupan route mahasiswa sisa + audit dosen penuh
+- 38 tes route mahasiswa baru (s2a/s2b2/s2c/s2d) → semua PASS setelah fix.
+- Fix M1: `PUT /api/users/me` tak pernah ada (mount `/api/users` + route /me, admin tetap 403). Fix M2: guard `deletedAt` join/invite/getGroupById grup (bug join grup terhapus terbukti live). M3 OPEN: update role anggota = dead feature (route 404, tanpa kolom role di DB, tanpa UI) — perlu keputusan implement/buang.
+- Fix D1: `LecturerMaterialsController::index()` tak pernah dibuat (GET materials 500). Fix D2: renumber week dua fase (reorder 500 unique violation). Fix D3: endpoint core-api analytics live/trends/share + halaman shared.tsx diimplement (fitur dosen sebelumnya mati 404 total; share token stateless JWT+exp). Fix D4: alias `GET /api/analytics/export?courseId=`.
+- Deploy & verifikasi live semua fix; vitest core-api 602/0; client tsc baseline 27.
+- Commits: core-api `caf7b5b`, `f810845`; client-app `291365d`.

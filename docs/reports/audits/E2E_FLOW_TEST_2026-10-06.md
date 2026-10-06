@@ -146,3 +146,24 @@ Mongo chatlogs (sesi tsb)   : 5 dokumen — edit (editedAt/version=1), hapus (de
 **Regresi setelah deploy (suite yang sama): 42 PASS · 0 FAIL · 1 SKIP** — tidak ada alur yang rusak.
 Build: core-api `tsc` bersih + **602 passed / 0 failed**; client-app `tsc` = 27 error baseline
 (`@/routes/*` wayfinder) dan vitest 3 file gagal = baseline identik (bukan regresi).
+
+
+## 8. Batch 3 (2026-10-06, lanjutan) — sisa route mahasiswa + audit dosen penuh
+
+### Mahasiswa — semua route terpetakan vs teruji (13+9+13+3 = 38 tes baru)
+Hasil akhir: **s2a 13/13 · s2b2 9/9 · s2c 13/13 · s2d 3/3 PASS**.
+Terdiscovery & diperbaiki:
+- **M1 (fix): `PUT /api/users/me` selalu 404** — core-api tidak punya endpoint itu sama sekali dan router user cuma di-mount di `/api/admin/users`. Edit profil (nama/email) dari UI mahasiswa tidak pernah bisa. Fix: tambah route `PUT /me` (semua role) + mount `/api/users` (endpoint admin tetap 403 untuk non-admin, terverifikasi).
+- **M2 (fix): grup soft-delete masih bisa di-join** — `joinGroupByCode`/`inviteMembers`/`getGroupById` tidak memfilter `deletedAt`. Terbukti live: Fajar berhasil join grup yang sudah dihapus (baris `group_members` tercipta). Fix: guard `deletedAt: null` di 3 service; verifikasi: kode grup terhapus → 404 `Invalid join code`.
+- **M3 (open): `PATCH /student/groups/{g}/members/{m}` (ubah role) → 404** — route client-app ada tapi core-api tak punya endpoint, skema `group_members` tanpa kolom role, dan UI tak punya tombol apa pun (dead feature). Perlu keputusan: implement (role + UI) atau buang route-nya.
+- Bukan bug: avatar <100x100 ditolak (validasi by design); BFF form-error selalu 302 (uji harus assert state, bukan status).
+
+### Dosen — 18+11+21 tes (batch L1/L2/L3), semua lulus setelah fix
+- **D1 (fix): `GET /lecturer/courses/{c}/materials` → 500** — route menunjuk method `LecturerMaterialsController::index()` yang tidak pernah dibuat. Diimplement.
+- **D2 (fix): minggu gagal di-reorder → 500** — `CourseWeekIndexService::renumberForCourse` update `week_index` satu per satu kena UNIQUE(course_id, week_index) saat dua minggu bertukar posisi. Fix: renumber dua fase (slot sementara negatif dulu).
+- **D3 (fix): fitur analitik "Live Stats", "Tren", "Bagikan Laporan" mati total** — core-api tak punya endpoint `/analytics/courses/:id/live|trends|share` (semua 404) dan halaman Inertia `lecturer/analytics/shared` tidak ada. Diimplement: live (delegasi analytics course), tren per hari (engagement/completion/attendance dari chatlogs + sessionDiscussions), share token stateless (JWT+exp, tanpa tabel), halaman shared.tsx.
+- **D4 (fix): `GET export-section` → 302** — BFF memanggil `GET /api/analytics/export` tanpa path course (route itu butuh `/:courseId`). Fix: alias `GET /export?courseId=`.
+- Teruji PASS: kelas CRUD + arsip, weeks CRUD/reorder/assign/unassign, upload knowledge-base, materi CRUD + stats + view + reindex (antre indeks ok), grup dosen buat/tambah anggota/hapus, close-single (200 "Sesi ditutup, kehadiran dicatat"), kehadiran detail/override/summary/export/bulk-close/destroy, aktivitas + export CSV, analytics detail/students/benchmark, share → akses publik 200, search dosen.
+
+**Regresi batch 3:** s2a/s2b2/s2c/s2d semua hijau setelah deploy; suite flows.js (43 tes) dijalankan ulang sebagai regresi penuh.
+**Residu baru:** kelas arsip `E2EDSN1` (Kelas Uji Dosen E2E v2, kelompok Grup Uji Dosen + sesi Sesi Uji Dosen), sesi "Sesi Uji Close-Single" (tertutup, auto-absen), 2 grup uji dihapus lewat UI.
