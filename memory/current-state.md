@@ -253,3 +253,11 @@ ruang chat sesi tertutup). Laporan: `docs/reports/audits/E2E_FLOW_TEST_2026-10-0
 - Fix D1: `LecturerMaterialsController::index()` tak pernah dibuat (GET materials 500). Fix D2: renumber week dua fase (reorder 500 unique violation). Fix D3: endpoint core-api analytics live/trends/share + halaman shared.tsx diimplement (fitur dosen sebelumnya mati 404 total; share token stateless JWT+exp). Fix D4: alias `GET /api/analytics/export?courseId=`.
 - Deploy & verifikasi live semua fix; vitest core-api 602/0; client tsc baseline 27.
 - Commits: core-api `caf7b5b`, `f810845`; client-app `291365d`.
+
+
+## 2026-10-06 · Batch 4: retrieval RAG per-minggu (empiris)
+- Uji: sesi Minggu 3 tanya materi Minggu 1 → citations lintas minggu **5/5 PASS** + sidebar Chrome menampilkan tepat dokumen terkutip.
+- 4 bug ditemukan & fix live: R1 client-app `assignMaterial` kirim path Laravel ke core-api (re-ingest week_index gagal) → `CoreApiFilePath::resolve()`; R2 ai-engine ingest duplikat buang metadata minggu → `update_payload_metadata()` merge ke chunk existing; R3 ai-engine ungrounded result tanpa citations → ikutkan `sources_to_citations`; R4 core-api stream timeout 30s < cold-start reranker45s → `STREAM_TIMEOUT` 120s.
+- Desain: filter per-minggu sengaja OFF (AI akses seluruh kelas) + boost minggu sesi; sidebar = dokumen terkutip saja.
+- Regresi: core-api602/0; subset engine651/24failed — A/B terbukti pre-existing (identik kode lama).
+- Commit: ai-engine `cae6204`, core-api `a29527b`, client-app `0106e85`.

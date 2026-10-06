@@ -167,3 +167,33 @@ Terdiscovery & diperbaiki:
 
 **Regresi batch 3:** s2a/s2b2/s2c/s2d semua hijau setelah deploy; suite flows.js (43 tes) dijalankan ulang sebagai regresi penuh.
 **Residu baru:** kelas arsip `E2EDSN1` (Kelas Uji Dosen E2E v2, kelompok Grup Uji Dosen + sesi Sesi Uji Dosen), sesi "Sesi Uji Close-Single" (tertutup, auto-absen), 2 grup uji dihapus lewat UI.
+
+
+## 9. Batch 4 (2026-10-06) — Uji empiris retrieval RAG per-minggu di chat diskusi
+
+Pertanyaan user: apakah AI di chat diskusi membaca knowledge base per minggu (mis. sesi minggu 3 bisa mengambil materi minggu 1), dan apakah dokumen yang terpanggil muncul di sidebar?
+
+### Cara diuji
+1. Upload materi unik (`partisi-lomuto-uji.txt`, penanda QUARK-LUMEN-7734) → assign ke **Minggu 1** IF203.
+2. Buat sesi di **Minggu 3** (Analisis Kompleksitas), pre-read + tujuan SMART, tanya `@ai` tentang isi materi minggu 1.
+3. Verifikasi: metadata chunk Qdrant, citations di socket, persistensi ChatLog, render sidebar via headless Chrome.
+
+### Temuan & fix (4 bug, semua terpasang & terverifikasi)
+- **R1 (client-app): assign materi ke minggu gagal re-ingest** — `LecturerCourseWeeksController::assignMaterial` mengirim `Storage::disk()->path()` (path container Laravel) ke core-api → "Source file not found on disk" → chunk tidak pernah dapat `week_index` → boost per-minggu mati. Fix: `CoreApiFilePath::resolve()` (shared volume `/shared-storage[-private]`), dipakai juga di MateriController (DRY).
+- **R2 (ai-engine): ingest duplikat membuang metadata minggu** — idempotency `content_hash` men-skip total saat file sama (mis. assign ulang / reindex) → `week_index` tidak pernah menempel. Fix: `VectorStoreService.update_payload_metadata()` (merge ke chunk existing via `set_payload`) + dipanggil di jalur duplikat untuk kunci `week_index`/`week_id`/`course_material_id`.
+- **R3 (ai-engine): jawaban ungrounded tanpa citations** — saat grounding check gagal, result scaffolding tidak menyertakan citations → dokumen hilang dari sidebar padahal retrieval sukses. Fix: `sources_to_citations` ikut disertakan di result ungrounded.
+- **R4 (core-api): `@ai` pertama pasca-restart engine selalu gagal/kosong** — cold-start reranker cross-encoder ~45 detik (download model) > `LLM_TIMEOUT` 30s → stream dibatalkan sebelum citations terkirim. Fix: `STREAM_TIMEOUT` 120s khusus `orchestratedChatStream`.
+
+### Hasil uji akhir (live)
+- Sesi Minggu 3 → tanya materi Minggu 1: **5/5 PASS** — citations `[{partisi-lomuto-uji.txt h.1}, {if203-sorting-algorithm-comparison.pdf h.1}]`, materi minggu 1 terkutip lintas minggu ✓
+- Metadata chunk Qdrant: `week_index=1, week_id=45486ac8-...` menempel setelah R1+R2 ✓
+- **Sidebar UI (headless Chrome)**: ruang chat menampilkan tepat 2 dokumen yang dikutip (materi minggu 1) — "kalo dia terpanggil aja" ✓
+- Regresi: core-api vitest **602/0**; subset engine (rag/vector/processor/grounding) **651 passed / 24 failed** — A/B buktikan **24 gagal identik di kode lama (pre-existing)**, bukan regresi.
+
+### Desain retrieval (hasil telusur, diverifikasi)
+- Filter ketat per-minggu **sengaja dimatikan** (`week_metadata_filter()` return None) — AI boleh baca seluruh kelas; chunk minggu sesi di-**boost** (margin skor 0.08) via `rank_week_boosted_results`.
+- Sidebar dokumen = `aggregateCitedMaterials` dari pesan AI (citations), bukan seluruh materi minggu.
+
+### Residu uji batch ini
+- Materi `partisi-lomuto-uji.txt` (Minggu 1 IF203) + chunk meta-test di koleksi Qdrant IF203.
+- 5+ sesi "Uji Retrieval Minggu" di Kelompok A IF203 (tertutup goal; @ai aktif di 2 sesi terakhir).
