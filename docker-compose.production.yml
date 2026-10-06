@@ -116,6 +116,11 @@ services:
       dockerfile: Dockerfile
     container_name: kolabri-core-api
     restart: unless-stopped
+    # Loopback-only publish so the stack is reachable when the bundled nginx
+    # profile is off (host already runs nginx, as on sumo1/vpsgw). Matches the
+    # ports sumo1 exposes to its host nginx.
+    ports:
+      - "127.0.0.1:${CORE_API_PORT:-13000}:3000"
     env_file:
       - ./Kolabri-core-api/.env.production
     environment:
@@ -146,6 +151,10 @@ services:
       dockerfile: Dockerfile
     container_name: kolabri-client-app
     restart: unless-stopped
+    # Loopback-only; see core-api note. Host nginx proxies here when
+    # COMPOSE_PROFILES excludes docker-nginx (./deploy.sh --no-nginx).
+    ports:
+      - "127.0.0.1:${CLIENT_APP_PORT:-18000}:80"
     env_file:
       - ./Kolabri-client-app/.env.production
     environment:

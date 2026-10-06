@@ -109,6 +109,18 @@ fi
 if [ "$EUID" -eq 0 ]; then
     echo -e "${YELLOW}Running as root (allowed — common on VPS).${NC}"
 fi
+
+# Fail fast on a host that already serves :80/:443 (very common: the host nginx
+# on sumo1/vpsgw). The container nginx would otherwise crash-loop silently.
+if [ "$WITH_NGINX" = true ] && command -v ss > /dev/null 2>&1; then
+    busy=$(ss -lntH 2>/dev/null | awk '{print $4}' | grep -cE ':(80|443)$' || true)
+    if [ "${busy:-0}" -gt 0 ]; then
+        echo -e "${YELLOW}⚠ Ports 80/443 are already in use on this host${NC}"
+        echo -e "${YELLOW}  The bundled nginx container cannot bind them.${NC}"
+        echo -e "${YELLOW}  Either stop the host web server, or deploy without the nginx profile:${NC}"
+        echo -e "${YELLOW}      ./deploy.sh --no-nginx    # then proxy host nginx to 127.0.0.1:18000 / :13000${NC}"
+    fi
+fi
 echo -e "${GREEN}✓ Prerequisites met${NC}"
 echo ""
 
