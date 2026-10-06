@@ -232,3 +232,16 @@ ruang chat sesi tertutup). Laporan: `docs/reports/audits/E2E_FLOW_TEST_2026-10-0
    **tidak punya guard sebelum** `messages.find()` — kalau handler keburu jalan, `find` wajib
    tercatat; karenanya kemungkinan klik tak sampai ke handler. Perlu repro di browser nyata
    (klik + Network tab).
+
+
+## 2026-10-06 · SRL Zimmerman end-to-end (ai-engine + core-api + client-app)
+**Sebelum:** hanya pesan @ai sampai ke classifier; distribusi 64% fase default (performance, conf 0.3); tak ada satupun tampil di UI; kolom SRL hilang di CSV.
+**Sekarang (semua live & terverifikasi):**
+- Classifier: pola `kasus terburuk*` + `apakah/bisakah/dapatkah` → default 64%→7%, sub-phase 2→6 (57 unit + 31 edge cases + 4 route test hijau).
+- Endpoint baru `POST /api/srl/classify` (api/routes/srl.py, auth Bearer secret) — core-api `classifySrl` fire-and-forget dari socket untuk pesan non-@ai; hanya log bila ada indikator nyata (CaseID `<groupId>_session_<sessionDiscussionId>`).
+- core-api `AnalyticsService.getSrlDistribution()` → field `srl` di group/session/course analytics.
+- UI dosen: radar analitik menampilkan share real (bukan estimasi) + legend "Fase SRL Zimmerman dari N pesan"; tab Sesi & Analisis blok "Fase SRL Zimmerman" per-sesi (distribution + sub-phase + sampel pesan).
+- CSV export engine: kolom `srl_phase,srl_sub_phase,srl_confidence`.
+- Backfill: 1250 pesan lama terklasifikasi (P1023/R221/F6) — total 1276 event SRL di activity_logs.
+- Bonus fix: `StudentCourseController::closeSession` BFF timeout 10s→30s (ringkasan LLM bisa >10s; sebelumnya close sukses tapi klien 500).
+**Bukti live:** sesi uji 3b6e4250 →3 pesan biasa terklasifikasi forethought .92 / performance .95 / reflection .87; group analytics total 38 (F1/P34/R3, avg 79%); course total 96; UI kelompok & sesi tampil nyata; ekspor CSV berkolom SRL.
