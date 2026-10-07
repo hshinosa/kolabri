@@ -261,3 +261,12 @@ ruang chat sesi tertutup). Laporan: `docs/reports/audits/E2E_FLOW_TEST_2026-10-0
 - Desain: filter per-minggu sengaja OFF (AI akses seluruh kelas) + boost minggu sesi; sidebar = dokumen terkutip saja.
 - Regresi: core-api602/0; subset engine651/24failed — A/B terbukti pre-existing (identik kode lama).
 - Commit: ai-engine `cae6204`, core-api `a29527b`, client-app `0106e85`.
+
+
+## 2026-10-07 · Rate limit dimatikan sementara
+- Permintaan user: matikan rate limit untuk sekarang.
+- Kode: `socketRateLimiter.ts` (flag SOCKET_RATE_LIMIT=0) + `rateLimiter.ts` express (flag RATE_LIMIT_DISABLED=1, via opsi skip) — default TETAP aktif, hanya mati saat env diset.
+- Deploy: docker-compose sumo1 blok core-api tambah `SOCKET_RATE_LIMIT: "0"` + `RATE_LIMIT_DISABLED: "1"` (backup `docker-compose.yml.bak-ratelimit`).
+- Verifikasi live:15 pesan serentak <10s (batas lama10) → 15/15 diterima,0 rate-limit event;150 request paralel (batas global lama100/15m) →0×429. Vitest602/0.
+- Cara mengaktifkan lagi: hapus2 baris env itu dari compose lalu `docker compose up -d core-api`.
+- Catatan: throttle login Laravel (5/5m per IP,10/jam per email) TIDAK dimatikan.
