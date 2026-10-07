@@ -277,3 +277,10 @@ ruang chat sesi tertutup). Laporan: `docs/reports/audits/E2E_FLOW_TEST_2026-10-0
 - **Tech debt tsc/build**: 27 error TS2307 = folder generated Wayfinder (`resources/js/routes/`, `wayfinder/`) tidak ada lokal → generate di container client-app, copy ke lokal → tsc 0 error, `npm run build` lokal sukses.
 - **Tech debt test engine**: suite per-file di container image (env dari container, data/ dari /opt/kolabri) — OOM137 saat run gabungan (RAM host3.7GB). Hasil akhir: **2605 passed /0 failed /0 errors**;11 file EC=5 = file test non-terkumpul (pre-existing, `def test` ada tapi tidak di-collect — no tests ran). Fix: test pindah ke classifier enhanced (import modul lama sudah mati), threshold intervention aware env (bukan hardcode10), endpoint group status sync → MagicMock (bukan AsyncMock), conftest stub paddleocr/paddlex + PIL BILINEAR, pola classifier `-kesimpulan\w*` + `perlu latihan`. Classifier terdeploy (probe live: reflection0.72).
 - Commits: core-api `c787fa1`, client-app `352f491`, ai-engine `2c63270`.
+
+
+## 2026-10-07 · Chat AI personal: fokus materi per-minggu + simpan sebagai Refleksi
+- **A. Fokus materi**: `week_index`+`focus_course_id` menempuh UI → Laravel streamMessage → core-api (zod sendMessageSchema, validasi ge1 le60) → engine PersonalChatRequest. Engine: `search_personal_rag` persempit ke1 koleksi + `rank_week_boosted_results` boost chunk minggu (konsisten dgn desain grup: bukan filter ketat). UI: dropdown "Fokus materi" (weekOptions dari AiChatController@index via Eloquent CourseWeek + withCount materi>0).
+- **B. Simpan sebagai Refleksi**: tombol "Jadikan dasar refleksi" per pesan AI → sessionStorage → redirect reflections → prefill textarea + buka modal → mahasiswa edit & submit sendiri (tidak auto-submit; governance akademik).
+- Verifikasi live: zod `week_index=999`→400, valid→SSE [DONE]; UI dropdown28 opsi ("DevOps · Minggu 1:..."), klik tombol → halaman refleksi dgn draft1812 char (EXIT=0, screenshot ai_focus_dropdown.png & reflection_draft.png).
+- Commits: core-api `4fdeab6` (+test6/6), client-app `70765ca`, ai-engine `3ede1dc`.
