@@ -270,3 +270,10 @@ ruang chat sesi tertutup). Laporan: `docs/reports/audits/E2E_FLOW_TEST_2026-10-0
 - Verifikasi live:15 pesan serentak <10s (batas lama10) → 15/15 diterima,0 rate-limit event;150 request paralel (batas global lama100/15m) →0×429. Vitest602/0.
 - Cara mengaktifkan lagi: hapus2 baris env itu dari compose lalu `docker compose up -d core-api`.
 - Catatan: throttle login Laravel (5/5m per IP,10/jam per email) TIDAK dimatikan.
+
+
+## 2026-10-07 · Fitur SRL mahasiswa + tech debt
+- **SRL student**: `GET /api/student/srl` (AnalyticsService.getStudentSrl via srlAggregate refactored, filter `Resource=Student_<id>`), prop `srl` di DashboardController, card "Fase Belajar Kamu" (bar3 fase + saran adaptif) di dashboard mahasiswa. Terdeploy & terverifikasi (Andi: F2%/P81%/R17% dari89 pesan, saran forethought-minim tampil via screenshot CDP).
+- **Tech debt tsc/build**: 27 error TS2307 = folder generated Wayfinder (`resources/js/routes/`, `wayfinder/`) tidak ada lokal → generate di container client-app, copy ke lokal → tsc 0 error, `npm run build` lokal sukses.
+- **Tech debt test engine**: suite per-file di container image (env dari container, data/ dari /opt/kolabri) — OOM137 saat run gabungan (RAM host3.7GB). Hasil akhir: **2605 passed /0 failed /0 errors**;11 file EC=5 = file test non-terkumpul (pre-existing, `def test` ada tapi tidak di-collect — no tests ran). Fix: test pindah ke classifier enhanced (import modul lama sudah mati), threshold intervention aware env (bukan hardcode10), endpoint group status sync → MagicMock (bukan AsyncMock), conftest stub paddleocr/paddlex + PIL BILINEAR, pola classifier `-kesimpulan\w*` + `perlu latihan`. Classifier terdeploy (probe live: reflection0.72).
+- Commits: core-api `c787fa1`, client-app `352f491`, ai-engine `2c63270`.
