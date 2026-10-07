@@ -127,6 +127,12 @@ services:
 
   core-api:
     restart: unless-stopped
+    # ENHANCE koneksi: soft nofile default1024 = kapasitas ~300 socket
+    # polling (2-3 fd per koneksi). Naik ke65536 agar menampung ribuan.
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     build:
       context: ./Kolabri-core-api
       dockerfile: Dockerfile
